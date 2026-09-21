@@ -1,11 +1,25 @@
 import { z } from "zod";
 
-export const productCategories = ["women", "men", "kids", "home", "multiple"] as const;
-export const allowedUploadTypes = ["application/pdf", "image/jpeg", "image/png", "image/webp"] as const;
+export const productCategories = [
+  "women",
+  "men",
+  "kids",
+  "home",
+  "multiple",
+] as const;
+export const allowedUploadTypes = [
+  "application/pdf",
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+] as const;
 export const MAX_UPLOAD_BYTES = 20 * 1024 * 1024;
 
 export function sizeCount(value: string) {
-  return value.split(/[,;/\n]+/).map((item) => item.trim()).filter(Boolean).length;
+  return value
+    .split(/[,;/\n]+/)
+    .map((item) => item.trim())
+    .filter(Boolean).length;
 }
 
 export const newsletterSchema = z.object({
@@ -29,11 +43,17 @@ export const designerApplicationBaseSchema = z.object({
   skuCount: z.number().int().min(10).max(100000),
   includesApparel: z.boolean(),
   sizeRange: z.string().trim().max(500),
-  confirmsWholesale: z.literal(true, { error: "Wholesale pricing confirmation is required." }),
-  confirmsDirectShipping: z.literal(true, { error: "Direct shipping confirmation is required." }),
+  confirmsWholesale: z.literal(true, {
+    error: "Wholesale pricing confirmation is required.",
+  }),
+  confirmsDirectShipping: z.literal(true, {
+    error: "Direct shipping confirmation is required.",
+  }),
   brandStory: z.string().trim().min(40).max(5000),
   additionalNotes: z.string().trim().max(3000),
-  privacyConsent: z.literal(true, { error: "Application consent is required." }),
+  privacyConsent: z.literal(true, {
+    error: "Application consent is required.",
+  }),
   marketingConsent: z.boolean(),
   consentedAt: z.iso.datetime(),
   consentCopyVersion: z.string().min(1).max(40),
@@ -42,11 +62,16 @@ export const designerApplicationBaseSchema = z.object({
   turnstileToken: z.string().max(4096).optional().default(""),
 });
 
-export const designerApplicationSchema = designerApplicationBaseSchema.superRefine((input, context) => {
-  if (input.includesApparel && sizeCount(input.sizeRange) < 5) {
-    context.addIssue({ code: "custom", path: ["sizeRange"], message: "List at least five apparel sizes." });
-  }
-});
+export const designerApplicationSchema =
+  designerApplicationBaseSchema.superRefine((input, context) => {
+    if (input.includesApparel && sizeCount(input.sizeRange) < 5) {
+      context.addIssue({
+        code: "custom",
+        path: ["sizeRange"],
+        message: "List at least five apparel sizes.",
+      });
+    }
+  });
 
 export const uploadRequestSchema = z.object({
   draftToken: z.string().min(20).max(4096),
@@ -62,8 +87,11 @@ export const submitApplicationSchema = z.object({
 });
 
 export type NewsletterSignupInput = z.infer<typeof newsletterSchema>;
-export type DesignerApplicationInput = z.infer<typeof designerApplicationSchema>;
-export type DesignerApplicationStatus = "draft" | "submitted" | "under_review" | "approved" | "declined";
+export type DesignerApplicationInput = z.infer<
+  typeof designerApplicationSchema
+>;
+export type DesignerApplicationStatus =
+  "draft" | "submitted" | "under_review" | "approved" | "declined";
 export type UploadRequest = z.infer<typeof uploadRequestSchema>;
 
 export function zodFieldErrors(error: z.ZodError) {

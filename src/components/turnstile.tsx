@@ -5,7 +5,10 @@ import { useEffect, useId, useRef } from "react";
 declare global {
   interface Window {
     turnstile?: {
-      render: (element: HTMLElement, options: Record<string, unknown>) => string;
+      render: (
+        element: HTMLElement,
+        options: Record<string, unknown>,
+      ) => string;
       remove: (widgetId: string) => void;
     };
   }
@@ -40,13 +43,16 @@ export function Turnstile({
       });
     };
 
-    const existing = document.querySelector<HTMLScriptElement>('script[data-eighteen-turnstile="true"]');
+    const existing = document.querySelector<HTMLScriptElement>(
+      'script[data-eighteen-turnstile="true"]',
+    );
     if (existing) {
       if (window.turnstile) render();
       else existing.addEventListener("load", render, { once: true });
     } else {
       const script = document.createElement("script");
-      script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
+      script.src =
+        "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
       script.async = true;
       script.defer = true;
       script.dataset.eighteenTurnstile = "true";
@@ -56,7 +62,8 @@ export function Turnstile({
 
     return () => {
       cancelled = true;
-      if (widgetRef.current && window.turnstile) window.turnstile.remove(widgetRef.current);
+      if (widgetRef.current && window.turnstile)
+        window.turnstile.remove(widgetRef.current);
       widgetRef.current = null;
     };
   }, [onToken, siteKey]);

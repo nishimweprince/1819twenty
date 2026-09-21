@@ -3,7 +3,8 @@ import { DesignerApplicationForm } from "@/components/designer-application-form"
 
 export const metadata: Metadata = {
   title: "Designer Application",
-  description: "Apply to join Eighteen Nineteen Twenty as an independent designer.",
+  description:
+    "Apply to join Eighteen Nineteen Twenty as an independent designer.",
 };
 
 export default function DesignerApplicationPage() {
@@ -14,7 +15,10 @@ export default function DesignerApplicationPage() {
           <div>
             <h1 className="mb-0 max-w-[10ch]">Tell us what you make.</h1>
           </div>
-          <p className="max-w-[38ch] text-[1.08rem]">Set aside about ten minutes. You will need your contact details, collection information, and one lookbook or product image.</p>
+          <p className="max-w-[38ch] text-[1.08rem]">
+            Set aside about ten minutes. You will need your contact details,
+            collection information, and one lookbook or product image.
+          </p>
         </div>
         <DesignerApplicationForm />
       </div>

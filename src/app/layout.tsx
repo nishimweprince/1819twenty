@@ -23,7 +23,8 @@ export const metadata: Metadata = {
     default: "Eighteen Nineteen Twenty",
     template: "%s | Eighteen Nineteen Twenty",
   },
-  description: "Fashion and home rooted in heritage, curated directly from independent African designers.",
+  description:
+    "Fashion and home rooted in heritage, curated directly from independent African designers.",
   openGraph: {
     title: "Eighteen Nineteen Twenty",
     description: "Timeless roots. Modern living.",
@@ -34,7 +35,9 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+export default function RootLayout({
+  children,
+}: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={`${display.variable} ${sans.variable}`}>
       <body>

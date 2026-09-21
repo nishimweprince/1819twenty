@@ -58,13 +58,17 @@ export function Select({
 
   useEffect(() => {
     if (open && activeIndex >= 0) {
-      listRef.current?.querySelector<HTMLElement>(`#${baseId}-opt-${activeIndex}`)?.scrollIntoView({ block: "nearest" });
+      listRef.current
+        ?.querySelector<HTMLElement>(`#${baseId}-opt-${activeIndex}`)
+        ?.scrollIntoView({ block: "nearest" });
     }
   }, [open, activeIndex, baseId]);
 
   function openList(startIndex: number) {
     setOpen(true);
-    setActiveIndex(startIndex >= 0 ? startIndex : selectedIndex >= 0 ? selectedIndex : 0);
+    setActiveIndex(
+      startIndex >= 0 ? startIndex : selectedIndex >= 0 ? selectedIndex : 0,
+    );
   }
 
   function commit(index: number) {
@@ -137,7 +141,9 @@ export function Select({
         aria-haspopup="listbox"
         aria-expanded={open}
         aria-controls={open ? listId : undefined}
-        aria-activedescendant={open && activeIndex >= 0 ? `${baseId}-opt-${activeIndex}` : undefined}
+        aria-activedescendant={
+          open && activeIndex >= 0 ? `${baseId}-opt-${activeIndex}` : undefined
+        }
         aria-invalid={invalid || undefined}
         aria-describedby={ariaDescribedby}
         data-placeholder={selected ? undefined : ""}
@@ -150,18 +156,35 @@ export function Select({
           }
         }}
       >
-        <span className="overflow-hidden text-ellipsis whitespace-nowrap">{selected ? selected.label : placeholder}</span>
+        <span className="overflow-hidden text-ellipsis whitespace-nowrap">
+          {selected ? selected.label : placeholder}
+        </span>
         <svg
           className="size-4 flex-none text-ink/75 transition-transform duration-150 group-aria-expanded:rotate-180"
-          viewBox="0 0 16 16" aria-hidden="true" focusable="false">
-          <path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+          viewBox="0 0 16 16"
+          aria-hidden="true"
+          focusable="false"
+        >
+          <path
+            d="M4 6l4 4 4-4"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.6"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
         </svg>
       </button>
       {name ? <input type="hidden" name={name} value={value} /> : null}
       {open ? (
         <ul
           className="absolute inset-x-0 top-full z-30 mt-1.5 max-h-60 list-none overflow-y-auto rounded-md border border-ink/28 bg-paper-hi p-1 shadow-[0_12px_30px_-18px_rgba(44,62,80,0.45)]"
-          id={listId} role="listbox" ref={listRef} aria-labelledby={baseId} tabIndex={-1}>
+          id={listId}
+          role="listbox"
+          ref={listRef}
+          aria-labelledby={baseId}
+          tabIndex={-1}
+        >
           {options.map((option, index) => (
             <li
               key={option.value}
@@ -180,8 +203,20 @@ export function Select({
             >
               <span>{option.label}</span>
               {option.value === value ? (
-                <svg className="size-4 flex-none" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
-                  <path d="M3.5 8.5l3 3 6-7" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                <svg
+                  className="size-4 flex-none"
+                  viewBox="0 0 16 16"
+                  aria-hidden="true"
+                  focusable="false"
+                >
+                  <path
+                    d="M3.5 8.5l3 3 6-7"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
                 </svg>
               ) : null}
             </li>

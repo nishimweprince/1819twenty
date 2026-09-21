@@ -6,7 +6,10 @@
  * request leaves the browser, and the confirmation page says it was simulated.
  */
 
-export function isStorageConfigured(env: { url?: string; anonKey?: string }): boolean {
+export function isStorageConfigured(env: {
+  url?: string;
+  anonKey?: string;
+}): boolean {
   return Boolean(env.url && env.anonKey);
 }
 

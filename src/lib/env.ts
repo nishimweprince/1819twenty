@@ -1,7 +1,11 @@
 import "server-only";
 import { z } from "zod";
 
-const optional = z.string().trim().optional().transform((value) => value || undefined);
+const optional = z
+  .string()
+  .trim()
+  .optional()
+  .transform((value) => value || undefined);
 
 const schema = z.object({
   NEXT_PUBLIC_SITE_URL: z.string().url().default("http://localhost:3000"),
@@ -12,8 +16,13 @@ const schema = z.object({
   CRON_SECRET: optional,
   RESEND_API_KEY: optional,
   RESEND_WEBHOOK_SECRET: optional,
-  RESEND_FROM_EMAIL: z.string().default("Eighteen Nineteen Twenty <applications@1819twenty.com>"),
-  INTERNAL_APPLICATION_EMAIL: z.string().email().default("hello@1819twenty.com"),
+  RESEND_FROM_EMAIL: z
+    .string()
+    .default("Eighteen Nineteen Twenty <applications@1819twenty.com>"),
+  INTERNAL_APPLICATION_EMAIL: z
+    .string()
+    .email()
+    .default("hello@1819twenty.com"),
   KLAVIYO_PRIVATE_API_KEY: optional,
   KLAVIYO_LIST_ID: optional,
   KLAVIYO_API_REVISION: z.string().default("2026-07-15"),

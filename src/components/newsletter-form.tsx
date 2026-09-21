@@ -11,15 +11,27 @@ import { button, input } from "@/lib/styles";
 
 const schema = z.object({
   email: z.email("Enter a valid email address."),
-  consent: z.boolean().refine((value) => value, "Please agree to receive updates before joining."),
+  consent: z
+    .boolean()
+    .refine(
+      (value) => value,
+      "Please agree to receive updates before joining.",
+    ),
   website: z.string().optional(),
 });
 type NewsletterValues = z.infer<typeof schema>;
 
-export function NewsletterForm({ variant = "hero" }: { variant?: "hero" | "footer" }) {
+export function NewsletterForm({
+  variant = "hero",
+}: {
+  variant?: "hero" | "footer";
+}) {
   const [message, setMessage] = useState("");
   const [turnstileToken, setTurnstileToken] = useState("");
-  const handleToken = useCallback((token: string) => setTurnstileToken(token), []);
+  const handleToken = useCallback(
+    (token: string) => setTurnstileToken(token),
+    [],
+  );
   const emailId = `${variant}-community-email`;
 
   const {
@@ -49,11 +61,16 @@ export function NewsletterForm({ variant = "hero" }: { variant?: "hero" | "foote
         }),
       });
       const result = await response.json();
-      if (!response.ok || !result.ok) throw new Error(result.message ?? "Could not join the list.");
+      if (!response.ok || !result.ok)
+        throw new Error(result.message ?? "Could not join the list.");
       setMessage("Check your inbox to confirm your subscription.");
       reset();
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "Could not join the list. Try again.");
+      setMessage(
+        error instanceof Error
+          ? error.message
+          : "Could not join the list. Try again.",
+      );
     }
   });
 
@@ -61,7 +78,9 @@ export function NewsletterForm({ variant = "hero" }: { variant?: "hero" | "foote
     return (
       <form className="w-full max-w-sm" onSubmit={onSubmit} noValidate>
         <div className="flex items-stretch overflow-hidden rounded-md border border-paper/45 bg-paper/12 focus-within:border-gold">
-          <label className="sr-only" htmlFor={emailId}>Email address</label>
+          <label className="sr-only" htmlFor={emailId}>
+            Email address
+          </label>
           <input
             id={emailId}
             type="email"
@@ -77,20 +96,52 @@ export function NewsletterForm({ variant = "hero" }: { variant?: "hero" | "foote
             type="submit"
             aria-label="Join our community"
           >
-            <svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true" focusable="false">
-              <path d="M4 10h11M11 5l5 5-5 5" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+            <svg
+              viewBox="0 0 20 20"
+              width="18"
+              height="18"
+              aria-hidden="true"
+              focusable="false"
+            >
+              <path
+                d="M4 10h11M11 5l5 5-5 5"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.6"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
             </svg>
           </button>
         </div>
         <label className="mt-3 grid grid-cols-[auto_1fr] items-center gap-2 text-[0.76rem] leading-snug text-paper/78">
-          <Checkbox aria-invalid={Boolean(errors.consent)} {...register("consent")} />
-          <span>I agree to receive updates. See our <Link className="text-paper" href="/privacy">privacy notice</Link>.</span>
+          <Checkbox
+            aria-invalid={Boolean(errors.consent)}
+            {...register("consent")}
+          />
+          <span>
+            I agree to receive updates. See our{" "}
+            <Link className="text-paper" href="/privacy">
+              privacy notice
+            </Link>
+            .
+          </span>
         </label>
-        <div className="absolute left-[-10000px] h-px w-px overflow-hidden" aria-hidden="true">
-          <label>Website<input tabIndex={-1} autoComplete="off" {...register("website")} /></label>
+        <div
+          className="absolute left-[-10000px] h-px w-px overflow-hidden"
+          aria-hidden="true"
+        >
+          <label>
+            Website
+            <input tabIndex={-1} autoComplete="off" {...register("website")} />
+          </label>
         </div>
         <Turnstile onToken={handleToken} />
-        <p className="mt-2 min-h-4 text-[0.78rem] text-paper/82" role="status" aria-live="polite">
+        <p
+          className="mt-2 min-h-4 text-[0.78rem] text-paper/82"
+          role="status"
+          aria-live="polite"
+        >
           {message || (errors.email?.message ?? errors.consent?.message ?? "")}
         </p>
       </form>
@@ -100,9 +151,16 @@ export function NewsletterForm({ variant = "hero" }: { variant?: "hero" | "foote
   // One centered column, declared once on the form. Every child fills it, so
   // nothing re-states a max-width and nothing drifts left.
   return (
-    <form className="mx-auto w-full max-w-136" id="join" onSubmit={onSubmit} noValidate>
+    <form
+      className="mx-auto w-full max-w-136"
+      id="join"
+      onSubmit={onSubmit}
+      noValidate
+    >
       <div className="flex gap-2 max-[620px]:flex-col max-[620px]:gap-2.5">
-        <label className="sr-only" htmlFor={emailId}>Email address</label>
+        <label className="sr-only" htmlFor={emailId}>
+          Email address
+        </label>
         <input
           id={emailId}
           type="email"
@@ -112,21 +170,49 @@ export function NewsletterForm({ variant = "hero" }: { variant?: "hero" | "foote
           className={`${input} min-h-12`}
           {...register("email")}
         />
-        <button className={`${button} min-h-12 flex-none whitespace-nowrap max-[620px]:w-full`} disabled={isSubmitting} type="submit">
+        <button
+          className={`${button} min-h-12 flex-none whitespace-nowrap max-[620px]:w-full`}
+          disabled={isSubmitting}
+          type="submit"
+        >
           {isSubmitting ? "Joining" : "Join our community"}
         </button>
       </div>
-      {errors.email ? <p className="mt-2 text-left text-[0.8rem] font-semibold text-danger">{errors.email.message}</p> : null}
+      {errors.email ? (
+        <p className="mt-2 text-left text-[0.8rem] font-semibold text-danger">
+          {errors.email.message}
+        </p>
+      ) : null}
       <label className="mt-3.5 grid grid-cols-[auto_1fr] items-start gap-2.5 text-left text-[0.8rem] leading-snug [&>span:first-child]:mt-0.5">
-        <Checkbox aria-invalid={Boolean(errors.consent)} {...register("consent")} />
-        <span>I agree to receive email updates and understand I can unsubscribe at any time. See our <Link href="/privacy">privacy notice</Link>.</span>
+        <Checkbox
+          aria-invalid={Boolean(errors.consent)}
+          {...register("consent")}
+        />
+        <span>
+          I agree to receive email updates and understand I can unsubscribe at
+          any time. See our <Link href="/privacy">privacy notice</Link>.
+        </span>
       </label>
-      {errors.consent ? <p className="mt-2 text-left text-[0.8rem] font-semibold text-danger">{errors.consent.message}</p> : null}
-      <div className="absolute left-[-10000px] h-px w-px overflow-hidden" aria-hidden="true">
-        <label>Website<input tabIndex={-1} autoComplete="off" {...register("website")} /></label>
+      {errors.consent ? (
+        <p className="mt-2 text-left text-[0.8rem] font-semibold text-danger">
+          {errors.consent.message}
+        </p>
+      ) : null}
+      <div
+        className="absolute left-[-10000px] h-px w-px overflow-hidden"
+        aria-hidden="true"
+      >
+        <label>
+          Website
+          <input tabIndex={-1} autoComplete="off" {...register("website")} />
+        </label>
       </div>
       <Turnstile onToken={handleToken} align="center" />
-      <p className="mt-3 text-center text-[0.85rem] text-ink/75" role="status" aria-live="polite">
+      <p
+        className="mt-3 text-center text-[0.85rem] text-ink/75"
+        role="status"
+        aria-live="polite"
+      >
         {message || "Double opt-in keeps the list useful and permission-based."}
       </p>
     </form>

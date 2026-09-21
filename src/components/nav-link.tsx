@@ -11,7 +11,13 @@ import type { Route } from "next";
  * Hover draws an ink underline, the current page draws a gold one, so the two
  * states stay distinguishable while hovering the link you are already on.
  */
-export function NavLink({ href, children }: { href: Route; children: React.ReactNode }) {
+export function NavLink({
+  href,
+  children,
+}: {
+  href: Route;
+  children: React.ReactNode;
+}) {
   const pathname = usePathname();
   const current = pathname === href;
 

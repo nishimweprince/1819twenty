@@ -1,5 +1,9 @@
 import { describe, expect, it, vi } from "vitest";
-import { createDraftToken, generateReference, verifyDraftToken } from "./security";
+import {
+  createDraftToken,
+  generateReference,
+  verifyDraftToken,
+} from "./security";
 
 describe("application references", () => {
   it("generates a non-sequential public reference", () => {
