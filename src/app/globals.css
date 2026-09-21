@@ -52,22 +52,13 @@
     --narrow: min(760px, calc(100vw - 48px));
   }
 
-  /* Anchor jumps glide, and the page settles onto section boundaries: with
-     `proximity`, a scroll that ends near the top of a section eases the rest
-     of the way, while a scroll that ends mid-section stays put. Sections
-     taller than the viewport therefore never trap the reader. */
+  /* Anchor jumps glide and stop below the sticky header. The offset lives
+     here alone: a scroll-margin on the target would add to it. Nothing
+     snaps — the page only moves when the reader moves it. */
   html {
     scroll-behavior: smooth;
     scroll-padding-top: 5.5rem;
-    scroll-snap-type: y proximity;
     -webkit-text-size-adjust: 100%;
-  }
-
-  /* Each top-level section is a rest point; the root's scroll-padding already
-     keeps it below the sticky header, so no margin here (the two would add
-     up). Sections nested inside components stay out of it. */
-  main > section {
-    scroll-snap-align: start;
   }
 
   body {
@@ -214,11 +205,5 @@
     transition-duration: 0.001ms !important;
     animation-duration: 0.001ms !important;
     animation-iteration-count: 1 !important;
-  }
-
-  /* Snapping moves the page on its own after the reader stops, so it counts
-     as motion here. */
-  html {
-    scroll-snap-type: none;
   }
 }

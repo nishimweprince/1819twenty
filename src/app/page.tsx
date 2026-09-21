@@ -9,9 +9,7 @@ const sideNote =
 export default function HomePage() {
   return (
     <>
-      {/* overflow-clip, not overflow-hidden: hidden would make the hero a scroll
-          container and swallow the #join form's snap position. */}
-      <section className="relative min-h-[calc(100svh-6.5rem)] overflow-clip">
+      <section className="relative min-h-[calc(100svh-6.5rem)] overflow-hidden">
         <div className="container relative z-1 grid min-h-[calc(100svh-6.5rem)] grid-cols-[7rem_minmax(0,1fr)_7rem] items-center py-12 max-[820px]:grid-cols-1">
           <div className={sideNote}>Independent design, directly connected</div>
           <div className="flex flex-col items-center text-center">
