@@ -1,0 +1,206 @@
+@import "tailwindcss";
+
+/* ---------------------------------------------------------------------------
+   Eighteen Nineteen Twenty — three hues, nothing else.
+
+   ink    #2C3E50  text, dark grounds, primary fills, every border as a tint
+   paper  #F6EBD7  every light section
+   gold   #D4A93B  punctuation only: state markers, rules, focus on dark
+
+   Everything else in the interface is one of these three at partial alpha.
+   The single exception is --color-danger, a semantic red reserved for form
+   validation, where indigo would not read as an error.
+--------------------------------------------------------------------------- */
+
+@theme {
+  --color-ink: #2c3e50;
+  --color-ink-deep: #24323f;
+  --color-paper: #f6ebd7;
+  --color-paper-hi: #fbf5ea;
+  --color-gold: #d4a93b;
+  --color-gold-lift: #dfb851;
+  --color-danger: #9a2c14;
+
+  --font-display: var(--font-bodoni), Georgia, serif;
+  --font-sans: var(--font-karla), ui-sans-serif, system-ui, sans-serif;
+
+  --radius-sm: 5px;
+  --radius-md: 8px;
+
+  --animate-settle: settle 900ms cubic-bezier(0.22, 1, 0.36, 1) both;
+
+  @keyframes settle {
+    from {
+      opacity: 0;
+      transform: translateY(18px) scale(0.985);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+}
+
+@layer base {
+  :root {
+    --container: min(1160px, calc(100vw - 48px));
+    --narrow: min(760px, calc(100vw - 48px));
+  }
+
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 5.5rem;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  /* Every scrollable section glides to the same rhythm as page-level anchor
+     navigation, and anchored sections stop below the sticky header. */
+  section {
+    scroll-behavior: smooth;
+    scroll-margin-top: 5.5rem;
+  }
+
+  body {
+    background: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    line-height: 1.55;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Preflight zeroes these, and the page has no rhythm without them. Utilities
+     still win, so any element can opt out with mb-0 or set its own. */
+  h1,
+  h2,
+  h3,
+  p {
+    margin-block-start: 0;
+  }
+
+  h1 {
+    margin-block-end: 1.5rem;
+  }
+
+  h2 {
+    margin-block-end: 1.125rem;
+  }
+
+  h3 {
+    margin-block-end: 0.6rem;
+  }
+
+  p {
+    margin-block-end: 1rem;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    font-weight: 500;
+    line-height: 1.08;
+    text-wrap: balance;
+  }
+
+  h1 {
+    font-size: clamp(2.6rem, 6vw, 5rem);
+    letter-spacing: -0.03em;
+  }
+
+  h2 {
+    font-size: clamp(1.85rem, 3.6vw, 3.2rem);
+    letter-spacing: -0.02em;
+  }
+
+  h3 {
+    font-size: clamp(1.3rem, 1.9vw, 1.7rem);
+    letter-spacing: -0.015em;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  a {
+    color: inherit;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.22em;
+  }
+
+  button,
+  a {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* One focus treatment, two colors. Ink on paper is 9.3:1; gold on ink is
+     4.98:1. Gold on paper would be 1.87:1, so dark grounds opt in explicitly
+     via data-ground rather than any element choosing its own ring. */
+  :focus-visible {
+    outline: 2px solid var(--color-ink);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
+  }
+
+  [data-ground="ink"] :focus-visible {
+    outline-color: var(--color-gold);
+  }
+
+  /* The custom checkbox hides its native input, so the global outline would
+     land on an invisible element. Mirror the same ring on the wrapper when
+     the inner input takes keyboard focus. */
+  .checkbox-root:has(input:focus-visible) {
+    outline: 2px solid var(--color-ink);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
+  }
+
+  [data-ground="ink"] .checkbox-root:has(input:focus-visible) {
+    outline-color: var(--color-gold);
+  }
+
+  ::selection {
+    background: var(--color-ink);
+    color: var(--color-paper);
+  }
+
+  [data-ground="ink"] ::selection {
+    background: var(--color-gold);
+    color: var(--color-ink);
+  }
+
+  @media (max-width: 700px) {
+    :root {
+      --container: min(100% - 32px, 1160px);
+      --narrow: min(100% - 32px, 760px);
+    }
+
+    h1 {
+      font-size: clamp(2.5rem, 12vw, 4rem);
+    }
+  }
+}
+
+@layer components {
+  .container {
+    margin-inline: auto;
+    width: var(--container);
+  }
+
+  .narrow {
+    margin-inline: auto;
+    width: var(--narrow);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.001ms !important;
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}

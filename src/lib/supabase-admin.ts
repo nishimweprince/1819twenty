@@ -1,0 +1,10 @@
+import "server-only";
+import { createClient } from "@supabase/supabase-js";
+import { env, hasSupabaseConfig } from "./env";
+
+export function getSupabaseAdmin() {
+  if (!hasSupabaseConfig()) return null;
+  return createClient(env.NEXT_PUBLIC_SUPABASE_URL!, env.SUPABASE_SERVICE_ROLE_KEY!, {
+    auth: { autoRefreshToken: false, persistSession: false },
+  });
+}
