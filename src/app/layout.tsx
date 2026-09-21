@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Bodoni_Moda, Karla } from "next/font/google";
+import { Bodoni_Moda, Caveat, Karla } from "next/font/google";
 import { SiteFooter, SiteHeader } from "@/components/site-shell";
 import "./globals.css";
 
@@ -12,6 +12,14 @@ const display = Bodoni_Moda({
 const sans = Karla({
   variable: "--font-karla",
   subsets: ["latin"],
+  display: "swap",
+});
+
+// Handwritten accent for the short brand phrases only; never body or headings.
+const script = Caveat({
+  variable: "--font-caveat",
+  subsets: ["latin"],
+  weight: ["500"],
   display: "swap",
 });
 
@@ -39,7 +47,10 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${display.variable} ${sans.variable}`}>
+    <html
+      lang="en"
+      className={`${display.variable} ${sans.variable} ${script.variable}`}
+    >
       <body>
         <a
           className="fixed left-4.5 top-[-5rem] z-100 bg-ink px-4 py-2.5 text-paper focus:top-4.5"

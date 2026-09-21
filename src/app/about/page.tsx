@@ -1,7 +1,11 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { buttonGold } from "@/lib/styles";
+import { BrandIcon, type BrandIconName } from "@/components/brand-icons";
+import { CityStack } from "@/components/city-stack";
+import { Numerals } from "@/components/numerals";
+import { PatternStrip } from "@/components/pattern-strip";
+import { buttonGold, ceremonial, goldRule, scriptAccent } from "@/lib/styles";
 
 export const metadata: Metadata = {
   title: "Our Story",
@@ -9,24 +13,16 @@ export const metadata: Metadata = {
     "The meaning, purpose, and promise behind Eighteen Nineteen Twenty.",
 };
 
-const pillars = [
-  ["◒", "Personally curated", "Thoughtfully selected by us, for you."],
-  ["◇", "Directly authentic", "From independent designers across Africa."],
-  [
-    "⊙",
-    "Transparent pricing",
-    "Clear prices, with shipping and duties included.",
-  ],
-  [
-    "✦",
-    "Rooted in heritage",
-    "Celebrating culture while supporting communities.",
-  ],
-] as const;
+const pillars: readonly [BrandIconName, string, string][] = [
+  ["globe", "Personally curated", "Thoughtfully selected by us, for you."],
+  ["diamond", "Directly authentic", "From independent designers across Africa."],
+  ["bag", "Transparent pricing", "No surprise fees. Duties included."],
+  ["sun", "Rooted in heritage", "Celebrating culture. Supporting communities."],
+];
 
 const figureFrame =
   "relative aspect-4/5 overflow-hidden rounded-md max-[900px]:aspect-3/2";
-const caption = "mt-4.5 font-display text-[1.15rem] italic";
+const caption = `${scriptAccent} mt-4.5 text-ink`;
 
 export default function AboutPage() {
   return (
@@ -97,90 +93,116 @@ export default function AboutPage() {
         </div>
       </section>
 
+      {/* The one bold moment on the page: numerals on ink, framed by the
+          mudcloth strip. Everything around it stays on paper and hairlines. */}
       <section
         data-ground="ink"
-        className="relative overflow-hidden bg-ink py-18 text-paper max-[700px]:py-14"
+        className="grid grid-cols-[minmax(0,1fr)_7rem] bg-ink text-paper max-[820px]:grid-cols-1"
+        aria-labelledby="why-these-numbers"
       >
-        <Image
-          className="object-cover object-center opacity-50"
-          src="/photos/pattern-indigo.jpg"
-          alt=""
-          fill
-          sizes="40vw"
-          aria-hidden="true"
-        />
-        <div
-          aria-hidden="true"
-          className="absolute inset-0 z-0 bg-[linear-gradient(90deg,var(--color-ink)_42%,rgb(44_62_80/0.55)_100%)]"
-        />
-        <div className="container relative z-1 grid grid-cols-2 items-center gap-9 max-[820px]:grid-cols-1">
+        <div className="grid grid-cols-[1fr_1.15fr] items-center gap-[clamp(2rem,5vw,4.5rem)] py-[clamp(4rem,7vw,6rem)] pl-[max(1.5rem,calc((100vw-var(--container))/2))] pr-[clamp(1.5rem,5vw,4.5rem)] max-[820px]:grid-cols-1 max-[820px]:px-[calc((100vw-var(--container))/2)]">
           <div>
-            <h2>Why these numbers?</h2>
-            <p className="max-w-[50ch]">
+            <h2 id="why-these-numbers" className="mb-4">
+              Why these numbers?
+            </h2>
+            <span className={`${goldRule} mb-6`} aria-hidden="true" />
+            <p className="mb-0 max-w-[46ch] text-paper/82">
               Eighteen. Nineteen. Twenty. Three birthdays, three people, one
-              family. These numbers represent our past, our present, and the
-              future we are building together.
+              family. They stand for our past, our present, and the future we
+              are building together — a reminder that everything we do is
+              rooted in family, guided by purpose, and made to create a more
+              connected, more beautiful world.
             </p>
-            <p className="mt-6 border-t border-gold/70 pt-4.5 text-paper/82">
+          </div>
+          <div className="flex flex-col items-center text-center">
+            <Numerals className="text-[clamp(4.2rem,9vw,8.5rem)]" />
+            <span className={`${goldRule} my-6`} aria-hidden="true" />
+            <p className={`${ceremonial} mb-0 text-paper/82`}>
               Three birthdays, three people, one family.
             </p>
           </div>
-          <p className="relative z-1 m-0 text-center font-display text-[clamp(4.2rem,10vw,9rem)] leading-none tracking-[-0.07em]">
-            18 · 19 · 20
-          </p>
+        </div>
+        <div className="max-[820px]:h-12">
+          <PatternStrip />
         </div>
       </section>
 
-      <section className="py-24 max-[700px]:py-18">
-        <div className="container grid grid-cols-2 items-center gap-[clamp(2rem,5vw,4.5rem)] max-[900px]:grid-cols-1">
-          <figure className="m-0 max-[900px]:order-2">
+      <section
+        className="py-24 max-[700px]:py-18"
+        aria-labelledby="our-journey"
+      >
+        <div className="container grid grid-cols-[1.1fr_0.9fr_0.9fr_auto] items-center gap-[clamp(1.5rem,3.5vw,3rem)] max-[1100px]:grid-cols-[1fr_1fr] max-[900px]:grid-cols-1">
+          <div className="max-[1100px]:col-span-2 max-[900px]:col-span-1">
+            <h2 id="our-journey" className="mb-4.5">
+              Our journey, from us to the continent
+            </h2>
+            <div className="max-w-[52ch]">
+              <p>
+                It began at home, with a deep appreciation for the beauty and
+                richness of African design. A love of travel, culture, and
+                craftsmanship grew into a commitment: connect exceptional
+                African designers with a global audience, starting in the
+                United States.
+              </p>
+              <p className="mb-0">
+                We work directly with independent designers across Africa and
+                share their stories and creations with the world.
+              </p>
+            </div>
+          </div>
+          <CityStack />
+          <figure className="m-0">
             <div className={figureFrame}>
               <Image
                 className="object-cover"
                 src="/photos/weaving.jpg"
                 alt="A weaver working colored threads on a traditional loom"
                 fill
-                sizes="(max-width: 900px) 100vw, 46vw"
+                sizes="(max-width: 900px) 100vw, 30vw"
               />
             </div>
-            <figcaption className={caption}>
-              Different places, shared purpose.
+            <figcaption className={`${caption} min-[1101px]:hidden`}>
+              Different places. Shared purpose.
             </figcaption>
           </figure>
-          <div>
-            <h2 className="mb-4.5">From us to the continent</h2>
-            <div className="max-w-[62ch]">
-              <p>
-                Our journey began at home, with a deep appreciation for the
-                beauty and richness of African design. A love for travel,
-                culture, and craftsmanship grew into a commitment to connect
-                exceptional African designers with a global audience.
-              </p>
-              <p>
-                We work directly with independent makers across the continent,
-                sharing their stories and creations with the world.
-              </p>
-            </div>
-          </div>
+          {/* Same vertical side-note idiom as the home hero. Hidden when the
+              grid collapses; the figcaption above carries the phrase then. */}
+          <p
+            className={`${scriptAccent} m-0 self-stretch text-ink [writing-mode:vertical-rl] max-[1100px]:hidden`}
+            aria-hidden="true"
+          >
+            Different places. Shared purpose.
+          </p>
         </div>
+      </section>
 
-        <div className="container">
-          <h2 className="mt-24 max-[700px]:mt-18">Our promise</h2>
-          {/* gap-px over an ink wash draws the rules, so the grid stays correct
-              at every breakpoint without per-child border rules. */}
-          <div className="mt-12 grid grid-cols-4 gap-px border-y border-ink/12 bg-ink/12 max-[820px]:grid-cols-2 max-[580px]:grid-cols-1">
-            {pillars.map(([icon, title, copy]) => (
-              <article className="bg-paper p-9" key={title}>
-                <span
-                  className="mb-3 block font-display text-[2.6rem] leading-none"
-                  aria-hidden="true"
-                >
-                  {icon}
-                </span>
-                <h3 className="mb-2.5 text-[1.65rem]">{title}</h3>
-                <p className="mb-0">{copy}</p>
-              </article>
-            ))}
+      <section
+        className="border-t border-ink/12 py-24 max-[700px]:py-18"
+        aria-labelledby="what-we-do"
+      >
+        <div className="container grid grid-cols-[1fr_3fr] gap-[clamp(2rem,5vw,4.5rem)] max-[900px]:grid-cols-1">
+          <div>
+            <h2 id="what-we-do" className="mb-4.5">
+              What we do
+            </h2>
+            <p className="mb-0 max-w-[32ch]">
+              We curate fashion and home from independent African designers and
+              make it easy for you to shop with confidence.
+            </p>
+          </div>
+          <div className="border-l border-ink/12 pl-[clamp(2rem,5vw,4.5rem)] max-[900px]:border-l-0 max-[900px]:border-t max-[900px]:pl-0 max-[900px]:pt-12">
+            <h2 className="mb-9">Our promise</h2>
+            {/* gap-px over an ink wash draws the rules, so the grid stays correct
+                at every breakpoint without per-child border rules. */}
+            <div className="grid grid-cols-4 gap-px bg-ink/12 max-[820px]:grid-cols-2 max-[480px]:grid-cols-1">
+              {pillars.map(([icon, title, copy]) => (
+                <article className="bg-paper px-6 py-3 max-[820px]:py-6 max-[480px]:px-0" key={title}>
+                  <BrandIcon className="mb-4 size-9 text-terracotta" name={icon} />
+                  <h3 className="mb-2 text-[1.35rem]">{title}</h3>
+                  <p className="mb-0 text-[0.95rem] text-ink/75">{copy}</p>
+                </article>
+              ))}
+            </div>
           </div>
         </div>
       </section>

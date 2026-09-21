@@ -1,156 +1,249 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { button } from "@/lib/styles";
+import { BrandIcon, type BrandIconName } from "@/components/brand-icons";
+import { Numerals } from "@/components/numerals";
+import { PatternStrip } from "@/components/pattern-strip";
+import { buttonGold, ceremonial, goldRule, scriptAccent } from "@/lib/styles";
 
 export const metadata: Metadata = {
   title: "For Designers",
   description:
-    "Apply to share your fashion and home designs with customers in the United States.",
+    "A global platform for African designers, makers, and artisans. Apply to share your fashion and home designs with the world.",
 };
 
-const values = [
-  [
-    "$",
-    "Wholesale purchase per unit",
-    "We purchase each item at your agreed wholesale price, without asking you to consign inventory.",
-  ],
-  [
-    "↗",
-    "Ship directly to customers",
-    "You hold your inventory and ship confirmed orders directly, so there is no separate warehouse handoff.",
-  ],
-  [
-    "7",
-    "Paid weekly",
-    "Receive regular payment without an upfront fee or consignment risk.",
-  ],
-  [
-    "US",
-    "Reach U.S. customers",
-    "We support the customer-facing experience so you can focus on design and fulfillment.",
-  ],
+const categories = [
+  {
+    name: "Apparel",
+    copy: "Women's, men's and children's wear",
+    src: "/photos/category-apparel.jpg",
+    alt: "Two women in flowing orange and indigo print dresses seated on a bench",
+  },
+  {
+    name: "Shoes",
+    copy: "Handcrafted and contemporary footwear",
+    src: "/photos/category-shoes.jpg",
+    alt: "A pair of olive leather slides resting on pale stone blocks",
+  },
+  {
+    name: "Accessories",
+    copy: "Jewelry, bags, scarves, hats and more",
+    src: "/photos/category-accessories.jpg",
+    alt: "Strands of hand-painted ochre and indigo glass beads piled together",
+  },
+  {
+    name: "Home décor",
+    copy: "Textiles, art, furniture and tabletop",
+    src: "/photos/about-hero.jpg",
+    alt: "Handwoven wall baskets above a rattan basket on a whitewashed bench",
+  },
+  {
+    name: "Art & craft",
+    copy: "Handmade and heritage pieces",
+    src: "/photos/category-art.jpg",
+    alt: "A potter shaping a calabash bowl among rows of finished vessels",
+  },
 ] as const;
 
-const steps = [
+const reasons: readonly [BrandIconName, string, string][] = [
   [
-    "01",
-    "Apply",
-    "Tell us about your brand, collection, production capacity, and story.",
+    "globe",
+    "Global reach",
+    "Reach customers in the U.S. and beyond through a curated marketplace.",
   ],
   [
-    "02",
-    "Review",
-    "Our team reviews complete applications within five business days.",
+    "people",
+    "Support for growth",
+    "Resources, storytelling, and marketing support to help your brand thrive.",
   ],
   [
-    "03",
-    "Prepare to launch",
-    "Selected designers can be ready for the site within two to three weeks.",
+    "bag",
+    "Brand visibility",
+    "Show your work alongside a community of exceptional African designers.",
   ],
-] as const;
+  [
+    "leaf",
+    "Purpose-driven",
+    "Join a platform that celebrates culture, creates economic opportunity, and supports lasting impact.",
+  ],
+];
 
 export default function DesignersPage() {
   return (
     <>
-      <section className="border-b border-ink/12 py-[clamp(4.5rem,10vw,8.5rem)]">
-        <div className="container grid grid-cols-[1.35fr_0.65fr] items-end gap-9 max-[820px]:grid-cols-1">
-          <div>
-            <h1 className="mb-4 max-w-[12ch]">
-              Bring your designs to the world.
+      <section className="grid min-h-[min(78svh,44rem)] grid-cols-[1fr_1.1fr] max-[900px]:grid-cols-1">
+        <div className="flex items-center px-[clamp(1.5rem,5vw,4.5rem)] py-[clamp(3rem,7vw,6rem)]">
+          <div className="max-w-136">
+            <h1 className="mb-6 max-w-[12ch]">
+              Designers, let&rsquo;s build together.
             </h1>
-            <p className="mb-0 max-w-[46ch] text-[1.05rem]">
-              No inventory risk. No upfront cost. A direct path to customers who
-              value where a piece comes from.
+            <p className="mb-9 max-w-[42ch] text-[1.05rem] text-ink/75">
+              A global platform for African designers, makers, and artisans to
+              share their creativity, culture, and craftsmanship with the
+              world.
+            </p>
+            <Link className={buttonGold} href="/designers/apply">
+              Apply to join
+            </Link>
+            <p
+              className={`${scriptAccent} mb-0 mt-10 max-w-[18ch] text-ink`}
+              aria-hidden="true"
+            >
+              Different designers. A more connected world.
             </p>
           </div>
-          <figure className="relative m-0 aspect-4/5 overflow-hidden rounded-md max-[820px]:aspect-3/2">
-            <Image
-              className="object-cover"
-              src="/photos/maker.jpg"
-              alt="A designer at work in traditional dress beside a sewing machine"
-              fill
-              sizes="(max-width: 820px) 100vw, 40vw"
-              priority
-            />
-          </figure>
+        </div>
+        <figure className="relative m-0 overflow-hidden max-[900px]:order-first max-[900px]:min-h-88">
+          <Image
+            className="object-cover"
+            src="/photos/designers-hero.jpg"
+            alt="Three handwoven baskets stacked against a sunlit terracotta wall"
+            fill
+            priority
+            sizes="(max-width: 900px) 100vw, 55vw"
+          />
+        </figure>
+      </section>
+
+      <section
+        data-ground="ink"
+        className="grid grid-cols-[7rem_minmax(0,1fr)_7rem] bg-ink text-paper max-[900px]:grid-cols-1"
+        aria-label="Eighteen Nineteen Twenty"
+      >
+        <div className="max-[900px]:h-12">
+          <PatternStrip />
+        </div>
+        <div className="grid grid-cols-[1fr_1.3fr_1fr] items-center gap-[clamp(1.5rem,4vw,3.5rem)] px-[clamp(1.5rem,4vw,3.5rem)] py-[clamp(3.5rem,6vw,5rem)] max-[900px]:grid-cols-1 max-[900px]:text-center">
+          <p
+            className={`${scriptAccent} m-0 text-paper max-[900px]:order-2`}
+            aria-hidden="true"
+          >
+            African talent.
+            <br />
+            Global impact.
+          </p>
+          <div className="flex flex-col items-center text-center max-[900px]:order-1">
+            <Numerals className="text-[clamp(3.6rem,7vw,6.5rem)]" />
+            <span className={`${goldRule} my-5`} aria-hidden="true" />
+            <p className={`${ceremonial} mb-0 leading-[1.9] text-paper/82`}>
+              Eighteen Nineteen Twenty
+              <br />
+              Fashion and home rooted in heritage
+            </p>
+          </div>
+          <div className="max-[900px]:order-3 max-[900px]:flex max-[900px]:flex-col max-[900px]:items-center">
+            <p className="mb-0 max-w-[30ch] text-paper/82">
+              We connect exceptional African designers with a global audience,
+              celebrating authentic style, cultural heritage, and contemporary
+              design.
+            </p>
+            <span className={`${goldRule} mt-5`} aria-hidden="true" />
+          </div>
+        </div>
+        <div className="max-[900px]:hidden">
+          <PatternStrip />
         </div>
       </section>
 
-      <section className="py-24 max-[700px]:py-18">
-        <div className="container grid grid-cols-2 items-center gap-[clamp(2rem,5vw,4.5rem)] max-[900px]:grid-cols-1">
-          <div>
-            <h2 className="mb-4.5">A practical partnership</h2>
-            <p className="max-w-[62ch]">
-              We are building a considered marketplace for independent African
-              fashion and home design. Our model is straightforward, so the
-              commercial relationship remains as clear as the creative one.
-            </p>
-          </div>
-          <figure className="m-0">
-            <div className="relative aspect-4/5 overflow-hidden rounded-md max-[900px]:aspect-3/2">
-              <Image
-                className="object-cover"
-                src="/photos/weaving.jpg"
-                alt="A weaver working colored threads on a traditional loom"
-                fill
-                sizes="(max-width: 900px) 100vw, 46vw"
-              />
-            </div>
-          </figure>
-        </div>
+      <section
+        className="py-24 max-[700px]:py-18"
+        aria-labelledby="looking-for"
+      >
         <div className="container">
-          <div className="mt-9 grid grid-cols-2 gap-px border-y border-ink/12 bg-ink/12 max-[580px]:grid-cols-1">
-            {values.map(([mark, title, copy]) => (
-              <article
-                className="grid grid-cols-[4rem_1fr] gap-4.5 bg-paper px-6 py-9"
-                key={title}
-              >
-                <div
-                  className="flex size-14 items-center justify-center rounded-full border border-ink/45 font-display text-2xl"
-                  aria-hidden="true"
+          <h2 id="looking-for" className="mb-3">
+            What we&rsquo;re looking for
+          </h2>
+          <p className="mb-10 text-[1.05rem]">
+            We welcome independent designers and brands creating:
+          </p>
+        </div>
+        {/* Five tiles do not wrap into 2 or 3 columns without an orphan, so the
+            row scrolls sideways on narrower screens instead of stacking. There
+            it spans the viewport, with the page gutter as padding so the first
+            tile aligns with the heading and the last can bleed off the edge. */}
+        <div
+          className="mx-auto grid w-(--container) grid-cols-5 gap-4 max-[1000px]:flex max-[1000px]:w-full max-[1000px]:snap-x max-[1000px]:snap-mandatory max-[1000px]:overflow-x-auto max-[1000px]:px-[calc((100vw-var(--container))/2)] max-[1000px]:pb-4 max-[1000px]:scroll-px-[calc((100vw-var(--container))/2)]"
+          role="region"
+          aria-label="Categories we welcome"
+          tabIndex={0}
+        >
+          {categories.map((category) => (
+            <figure
+              className="m-0 max-[1000px]:min-w-[min(62vw,20rem)] max-[1000px]:snap-start"
+              key={category.name}
+            >
+              <div className="relative hover:scale-105 transition-transform duration-300 aspect-4/5 overflow-hidden rounded-md">
+                <Image
+                  className="object-cover hover:*:scale-105 transition-transform duration-300"
+                  src={category.src}
+                  alt={category.alt}
+                  fill
+                  sizes="(max-width: 1000px) 62vw, 20vw"
+                />
+              </div>
+              <figcaption className="mt-4">
+                <h3 className="mb-1 text-[1.3rem]">{category.name}</h3>
+                <p className="mb-0 text-[0.95rem] text-ink/75">
+                  {category.copy}
+                </p>
+              </figcaption>
+            </figure>
+          ))}
+        </div>
+      </section>
+
+      <section
+        className="border-t border-ink/12 py-24 max-[700px]:py-18"
+        aria-labelledby="why-join"
+      >
+        <div className="container grid grid-cols-[3fr_1fr] items-start gap-[clamp(2rem,5vw,4.5rem)] max-[900px]:grid-cols-1">
+          <div>
+            <h2 id="why-join" className="mb-9">
+              Why join Eighteen Nineteen Twenty?
+            </h2>
+            <div className="grid grid-cols-4 gap-px bg-ink/12 max-[820px]:grid-cols-2 max-[480px]:grid-cols-1">
+              {reasons.map(([icon, title, copy]) => (
+                <article
+                  className="bg-paper px-6 py-3 max-[820px]:py-6 max-[480px]:px-0"
+                  key={title}
                 >
-                  {mark}
-                </div>
-                <div>
-                  <h3 className="mb-2">{title}</h3>
-                  <p className="mb-0">{copy}</p>
-                </div>
-              </article>
-            ))}
+                  <span className="mb-5 inline-flex size-14 items-center justify-center rounded-full bg-terracotta text-paper">
+                    <BrandIcon className="size-7" name={icon} />
+                  </span>
+                  <h3 className="mb-2 text-[1.35rem]">{title}</h3>
+                  <p className="mb-0 text-[0.95rem] text-ink/75">{copy}</p>
+                </article>
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
-
-      <section className="border-t border-ink/12 py-24 max-[700px]:py-18">
-        <div className="container">
-          <h2>Simple onboarding</h2>
-          {/* A real sequence — apply, then review, then launch — so the numbering carries information. */}
-          <ol className="mt-12 grid list-none grid-cols-3 gap-px border-y border-ink/12 bg-ink/12 p-0 max-[820px]:grid-cols-1">
-            {steps.map(([number, title, copy]) => (
-              <li className="bg-paper p-6" key={number}>
-                <div className="mb-3 pt-3 font-display text-[2.6rem] leading-none">
-                  {number}
-                </div>
-                <h3 className="mb-2">{title}</h3>
-                <p className="mb-0">{copy}</p>
-              </li>
-            ))}
-          </ol>
-        </div>
-      </section>
-
-      <section className="container py-18">
-        <div className="grid grid-cols-[1fr_auto] items-center gap-9 rounded-md border border-ink/28 bg-paper-hi p-12 max-[820px]:grid-cols-1 max-[580px]:px-6 max-[580px]:py-9">
-          <div>
-            <h2 className="mb-2">Minimum qualifications</h2>
-            <p className="mb-0 max-w-[62ch]">
-              Your collection must include at least 10 available items. Apparel
-              collections must offer at least five sizes for every submitted
-              style.
+          <blockquote
+            className={`${scriptAccent} m-0 border-t border-ink/12 pt-6 text-ink max-[900px]:max-w-[22ch]`}
+          >
+            <p className="mb-0">
+              &ldquo;Extraordinary designers. A more connected world.&rdquo;
             </p>
-          </div>
-          <Link className={button} href="/designers/apply">
+          </blockquote>
+        </div>
+      </section>
+
+      <section
+        data-ground="ink"
+        className="relative flex min-h-[min(52svh,30rem)] items-center justify-center overflow-hidden text-center"
+      >
+        <Image
+          className="object-cover object-[center_55%]"
+          src="/photos/landscape.jpg"
+          alt=""
+          fill
+          sizes="100vw"
+        />
+        {/* ink/78 keeps the heading at 4.82:1 even over the lightest part of the photo */}
+        <div aria-hidden="true" className="absolute inset-0 z-1 bg-ink/78" />
+        <div className="container relative z-2">
+          <h2 className="mx-auto mb-6 max-w-[18ch] text-paper">
+            Join our community of visionary designers
+          </h2>
+          <Link className={buttonGold} href="/designers/apply">
             Apply to join
           </Link>
         </div>

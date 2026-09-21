@@ -156,9 +156,13 @@ export function NewsletterForm({
 
   // One centered column, declared once on the form. Every child fills it, so
   // nothing re-states a max-width and nothing drifts left.
+  //
+  // snap-start makes the anchor target a rest point of its own: the page
+  // settles onto sections while scrolling, and without it a jump to #join
+  // would be pulled on to the next section, hiding the form under the header.
   return (
     <form
-      className="mx-auto w-full max-w-136"
+      className="mx-auto w-full max-w-136 snap-start"
       id="join"
       onSubmit={onSubmit}
       noValidate

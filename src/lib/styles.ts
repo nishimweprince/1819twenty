@@ -39,3 +39,20 @@ export const fieldHint = "text-[0.82rem] text-ink/75";
 
 /** Muted body copy. ink/75 is 4.75:1 on paper — ink/70 falls to 4.15:1. */
 export const muted = "text-ink/75";
+
+/**
+ * Handwritten brand phrase ("Different places. Shared purpose."). Decorative:
+ * every use is either aria-hidden or repeats copy that is already on the page.
+ * Color is set at the call site — text-ink on paper, text-paper on ink.
+ */
+export const scriptAccent =
+  "font-script text-[clamp(1.5rem,2.2vw,1.9rem)] leading-[1.15] tracking-[0.01em]";
+
+/**
+ * The one tracked-caps style on the site, reserved for text that imitates an
+ * object (book spines) or the single ceremonial line under the numerals.
+ */
+export const ceremonial = "text-[0.72rem] uppercase tracking-[0.24em]";
+
+/** Short gold rule that punctuates a heading or a phrase. */
+export const goldRule = "block h-0.5 w-12 bg-gold";

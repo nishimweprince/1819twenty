@@ -1,13 +1,16 @@
 @import "tailwindcss";
 
 /* ---------------------------------------------------------------------------
-   Eighteen Nineteen Twenty — three hues, nothing else.
+   Eighteen Nineteen Twenty — the four hues of the brand sheet, nothing else.
 
-   ink    #2C3E50  text, dark grounds, primary fills, every border as a tint
-   paper  #F6EBD7  every light section
-   gold   #D4A93B  punctuation only: state markers, rules, focus on dark
+   ink         #2C3E50  text, dark grounds, primary fills, every border as a tint
+   paper       #F6EBD7  every light section
+   gold        #D4A93B  punctuation only: state markers, rules, focus on dark
+   terracotta  #C1592D  icons and icon discs only. 3.76:1 on paper clears the
+                        3:1 graphics threshold but not 4.5:1 for text, so it
+                        never carries a letter.
 
-   Everything else in the interface is one of these three at partial alpha.
+   Everything else in the interface is one of these four at partial alpha.
    The single exception is --color-danger, a semantic red reserved for form
    validation, where indigo would not read as an error.
 --------------------------------------------------------------------------- */
@@ -19,10 +22,12 @@
   --color-paper-hi: #fbf5ea;
   --color-gold: #d4a93b;
   --color-gold-lift: #dfb851;
+  --color-terracotta: #c1592d;
   --color-danger: #9a2c14;
 
   --font-display: var(--font-bodoni), Georgia, serif;
   --font-sans: var(--font-karla), ui-sans-serif, system-ui, sans-serif;
+  --font-script: var(--font-caveat), "Segoe Script", cursive;
 
   --radius-sm: 5px;
   --radius-md: 8px;
@@ -47,17 +52,22 @@
     --narrow: min(760px, calc(100vw - 48px));
   }
 
+  /* Anchor jumps glide, and the page settles onto section boundaries: with
+     `proximity`, a scroll that ends near the top of a section eases the rest
+     of the way, while a scroll that ends mid-section stays put. Sections
+     taller than the viewport therefore never trap the reader. */
   html {
     scroll-behavior: smooth;
     scroll-padding-top: 5.5rem;
+    scroll-snap-type: y proximity;
     -webkit-text-size-adjust: 100%;
   }
 
-  /* Every scrollable section glides to the same rhythm as page-level anchor
-     navigation, and anchored sections stop below the sticky header. */
-  section {
-    scroll-behavior: smooth;
-    scroll-margin-top: 5.5rem;
+  /* Each top-level section is a rest point; the root's scroll-padding already
+     keeps it below the sticky header, so no margin here (the two would add
+     up). Sections nested inside components stay out of it. */
+  main > section {
+    scroll-snap-align: start;
   }
 
   body {
@@ -182,16 +192,18 @@
   }
 }
 
-@layer components {
-  .container {
-    margin-inline: auto;
-    width: var(--container);
-  }
+/* Tailwind ships its own `container` utility (width: 100%, stepped max-width)
+   and the utilities layer beats @layer components, so the shell used to lose
+   its gutters. These rules stay unlayered, where they outrank every layer. */
+.container {
+  margin-inline: auto;
+  width: var(--container);
+  max-width: none;
+}
 
-  .narrow {
-    margin-inline: auto;
-    width: var(--narrow);
-  }
+.narrow {
+  margin-inline: auto;
+  width: var(--narrow);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -202,5 +214,11 @@
     transition-duration: 0.001ms !important;
     animation-duration: 0.001ms !important;
     animation-iteration-count: 1 !important;
+  }
+
+  /* Snapping moves the page on its own after the reader stops, so it counts
+     as motion here. */
+  html {
+    scroll-snap-type: none;
   }
 }
