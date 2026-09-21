@@ -1,4 +1,10 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const pushMock = vi.fn();
@@ -25,6 +31,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  cleanup();
   vi.unstubAllEnvs();
 });
 
@@ -96,5 +103,24 @@ describe("DesignerApplicationForm without provider env", () => {
     expect(destination).toMatch(
       /^\/designers\/apply\/received\?reference=SIM-[0-9A-F]{8}&simulated=1$/,
     );
+  });
+
+  it("shows a sending indicator as soon as Send application is clicked", async () => {
+    render(<DesignerApplicationForm />);
+    await screen.findByRole("group", { name: "Your brand" });
+
+    await completeStepZero();
+    await completeStepOne();
+    await completeStepTwo();
+
+    fireEvent.click(screen.getByRole("button", { name: "Send application" }));
+
+    await screen.findByRole("status");
+    expect(screen.getByRole("status")).toHaveTextContent(
+      "Saving your application",
+    );
+    expect(
+      screen.getByRole("button", { name: "Sending" }),
+    ).toBeDisabled();
   });
 });

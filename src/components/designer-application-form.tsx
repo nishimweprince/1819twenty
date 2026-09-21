@@ -8,6 +8,7 @@ import {
   useForm,
   useWatch,
   type FieldError,
+  type FieldErrors,
   type UseFormRegisterReturn,
 } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -297,6 +298,27 @@ export function DesignerApplicationForm() {
     setStep((current) => Math.max(current - 1, 0));
   }
 
+  function handleInvalid(formErrors: FieldErrors<FormValues>) {
+    const fileMessage = validateFile(file);
+    if (fileMessage || !file) {
+      setStep(2);
+      setFileError(fileMessage || "Add one lookbook or product image.");
+      window.scrollTo({ top: 300, behavior: "smooth" });
+      return;
+    }
+    // additionalNotes lives on step 2 but is not part of stepFields.
+    if (formErrors.additionalNotes) {
+      setStep(2);
+    } else {
+      const stepWithError = stepFields.findIndex((fields) =>
+        fields.some((field) => formErrors[field]),
+      );
+      if (stepWithError < 0) return;
+      setStep(stepWithError);
+    }
+    window.scrollTo({ top: 300, behavior: "smooth" });
+  }
+
   async function submitApplication(values: FormValues) {
     const message = validateFile(file);
     if (message || !file) {
@@ -304,6 +326,9 @@ export function DesignerApplicationForm() {
       setFileError(message || "Add one lookbook or product image.");
       return;
     }
+
+    setStatus("submitting");
+    setStatusMessage("Saving your application");
 
     // Without client storage variables there is nothing to send to: simulate
     // the submission so the flow can be reviewed end to end. Nothing leaves
@@ -319,9 +344,6 @@ export function DesignerApplicationForm() {
       );
       return;
     }
-
-    setStatus("submitting");
-    setStatusMessage("Saving your application");
 
     const payload = {
       ...values,
@@ -455,7 +477,7 @@ export function DesignerApplicationForm() {
 
       <form
         className="min-w-0 p-[clamp(1.5rem,5vw,4.5rem)]"
-        onSubmit={handleSubmit(submitApplication)}
+        onSubmit={handleSubmit(submitApplication, handleInvalid)}
         noValidate
       >
         {status === "error" ? (

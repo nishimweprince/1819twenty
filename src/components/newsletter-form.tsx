@@ -27,6 +27,7 @@ export function NewsletterForm({
   variant?: "hero" | "footer";
 }) {
   const [message, setMessage] = useState("");
+  const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
   const [turnstileToken, setTurnstileToken] = useState("");
   const handleToken = useCallback(
     (token: string) => setTurnstileToken(token),
@@ -46,6 +47,7 @@ export function NewsletterForm({
 
   const onSubmit = handleSubmit(async (values) => {
     setMessage("");
+    setStatus("idle");
     try {
       const response = await fetch("/api/newsletter/subscribe", {
         method: "POST",
@@ -64,6 +66,7 @@ export function NewsletterForm({
       if (!response.ok || !result.ok)
         throw new Error(result.message ?? "Could not join the list.");
       setMessage("Check your inbox to confirm your subscription.");
+      setStatus("success");
       reset();
     } catch (error) {
       setMessage(
@@ -71,6 +74,7 @@ export function NewsletterForm({
           ? error.message
           : "Could not join the list. Try again.",
       );
+      setStatus("error");
     }
   });
 
@@ -138,7 +142,9 @@ export function NewsletterForm({
         </div>
         <Turnstile onToken={handleToken} />
         <p
-          className="mt-2 min-h-4 text-[0.78rem] text-paper/82"
+          // The footer sits on a dark ground where --color-danger is too
+          // dark to read, so errors use danger lightened for dark grounds.
+          className={`mt-2 min-h-4 text-[0.78rem] ${status === "error" || !message ? "font-semibold text-[#d1a095]" : "text-paper/82"}`}
           role="status"
           aria-live="polite"
         >
@@ -209,7 +215,7 @@ export function NewsletterForm({
       </div>
       <Turnstile onToken={handleToken} align="center" />
       <p
-        className="mt-3 text-center text-[0.85rem] text-ink/75"
+        className={`mt-3 text-center text-[0.85rem] ${status === "error" ? "font-semibold text-danger" : "text-ink/75"}`}
         role="status"
         aria-live="polite"
       >

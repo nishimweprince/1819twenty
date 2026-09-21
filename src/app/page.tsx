@@ -13,9 +13,9 @@ export default function HomePage() {
         <div className="container relative z-1 grid min-h-[calc(100svh-6.5rem)] grid-cols-[7rem_minmax(0,1fr)_7rem] items-center py-12 max-[820px]:grid-cols-1">
           <div className={sideNote}>Independent design, directly connected</div>
           <div className="flex flex-col items-center text-center">
-            <div className="w-[min(420px,74vw)] animate-settle">
+            <div className="w-[min(564px,90vw)] overflow-visible animate-settle">
               <Image
-                className="h-auto w-full"
+                className="h-auto w-full object-contain"
                 src="/hero-emblem.png"
                 alt="Eighteen Nineteen Twenty"
                 width={564}
