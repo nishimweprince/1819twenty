@@ -9,7 +9,7 @@
  */
 
 const controlBase =
-  "inline-flex min-h-[2.9rem] items-center justify-center gap-2 rounded-md " +
+  "inline-flex min-h-[2.9rem] cursor-pointer items-center justify-center gap-2 rounded-md " +
   "px-5 py-2.5 text-[0.85rem] font-semibold tracking-[0.01em] no-underline " +
   "transition-colors duration-150 disabled:cursor-not-allowed disabled:opacity-55";
 

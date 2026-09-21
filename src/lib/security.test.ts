@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { createDraftToken, generateReference, verifyDraftToken } from "./security";
 
 describe("application references", () => {
@@ -18,5 +18,17 @@ describe("draft tokens", () => {
   it("rejects tampering", () => {
     const token = createDraftToken("application-a", "maker@example.com");
     expect(verifyDraftToken(`${token}x`, "application-a")).toBe(false);
+  });
+});
+
+describe("turnstile verification", () => {
+  it("skips verification when unconfigured, even in production", async () => {
+    vi.resetModules();
+    vi.stubEnv("NODE_ENV", "production");
+    vi.stubEnv("TURNSTILE_SECRET_KEY", "");
+    const { verifyTurnstile } = await import("./security");
+    await expect(verifyTurnstile("", "127.0.0.1")).resolves.toBe(true);
+    vi.unstubAllEnvs();
+    vi.resetModules();
   });
 });

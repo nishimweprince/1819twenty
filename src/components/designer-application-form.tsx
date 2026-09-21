@@ -8,6 +8,7 @@ import { useForm, useWatch, type FieldError, type UseFormRegisterReturn } from "
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { productCategories, sizeCount } from "@/lib/validation";
+import { isStorageConfigured, simulatedReference } from "@/lib/submission";
 import { Checkbox } from "./ui/checkbox";
 import { Select } from "./ui/select";
 import { Turnstile } from "./turnstile";
@@ -68,7 +69,7 @@ const fieldsetBase = "m-0 border-0 p-0";
 const legendBase = "mb-3 font-display text-[clamp(1.7rem,3vw,2.6rem)] leading-tight";
 const introBase = "mb-9 max-w-[58ch] text-ink/75";
 const checkRow = "grid grid-cols-[auto_1fr] items-start gap-2.5 text-[0.9rem] leading-relaxed [&>span:first-child]:mt-0.5";
-const checkGroup = "col-span-full mt-3 grid gap-4.5 border-t border-ink/12 pt-6";
+const checkGroup = "col-span-full mt-3 grid items-start gap-4.5 border-t border-ink/12 pt-6";
 
 function ErrorText({ children }: { children: React.ReactNode }) {
   return (
@@ -94,8 +95,8 @@ function Field({ label, hint, error, required = true, children }: {
   return (
     <label className={fieldWrap}>
       <span className={fieldLabel}>{label}{required ? " *" : ""}</span>
-      {hint ? <span className={fieldHint}>{hint}</span> : null}
       {children}
+      {hint ? <span className={fieldHint}>{hint}</span> : null}
       {error?.message ? <ErrorText>{error.message}</ErrorText> : null}
     </label>
   );
@@ -197,6 +198,21 @@ export function DesignerApplicationForm() {
     if (message || !file) {
       setStep(2);
       setFileError(message || "Add one lookbook or product image.");
+      return;
+    }
+
+    // Without client storage variables there is nothing to send to: simulate
+    // the submission so the flow can be reviewed end to end. Nothing leaves
+    // the browser, and the confirmation page states that it was simulated.
+    if (
+      !isStorageConfigured({
+        url: process.env.NEXT_PUBLIC_SUPABASE_URL,
+        anonKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+      })
+    ) {
+      router.push(
+        `/designers/apply/received?reference=${encodeURIComponent(simulatedReference(idempotencyKey))}&simulated=1`,
+      );
       return;
     }
 
@@ -385,10 +401,10 @@ export function DesignerApplicationForm() {
             <div className={gridTwo}>
               <label className={fieldFull}>
                 <span className={fieldLabel}>Product photos or lookbook *</span>
-                <span className={fieldHint}>One PDF, PNG, JPEG, or WebP file. Maximum 20 MB.</span>
                 <input
                   className="flex min-h-[2.75rem] w-full cursor-pointer items-center gap-3 rounded-md border border-dashed border-ink/34 bg-paper px-2.5 py-2 text-ink/75 transition-colors duration-150 hover:border-ink/55 focus-visible:border-ink focus-within:border-ink aria-invalid:border-danger file:mr-3 file:cursor-pointer file:rounded-sm file:border file:border-ink/34 file:bg-paper-hi file:px-3.5 file:py-2 file:font-semibold file:text-ink file:transition-colors hover:file:bg-ink/8"
                   type="file" accept=".pdf,.png,.jpg,.jpeg,.webp" onChange={selectFile} aria-invalid={Boolean(fileError)} />
+                <span className={fieldHint}>One PDF, PNG, JPEG, or WebP file. Maximum 20 MB.</span>
                 {file && !fileError ? <span className={fieldHint}>Selected: {file.name}</span> : null}
                 {fileError ? <ErrorText>{fileError}</ErrorText> : null}
               </label>

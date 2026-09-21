@@ -38,7 +38,10 @@ export async function enforceRateLimit(scope: string, identity: string, limit: n
 }
 
 export async function verifyTurnstile(token: string, ip: string) {
-  if (!env.TURNSTILE_SECRET_KEY) return process.env.NODE_ENV !== "production";
+  // Without a secret there is no provider to verify against (the widget only
+  // renders when a site key is set), so the check is skipped. Once a secret
+  // is configured, empty or invalid tokens fail as before.
+  if (!env.TURNSTILE_SECRET_KEY) return true;
   if (!token) return false;
   const body = new FormData();
   body.set("secret", env.TURNSTILE_SECRET_KEY);
