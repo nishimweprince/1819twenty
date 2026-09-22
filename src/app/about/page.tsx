@@ -33,9 +33,11 @@ const pillars: readonly [BrandIconName, string, string][] = [
 ];
 
 // The comp sets the two journey photographs to a common height and lets their
-// widths differ, rather than to a common aspect. Below 900px they stack and an
-// aspect ratio takes over.
-const figureFrame = `${zoomFrame} h-[clamp(11rem,18vw,14.5rem)] rounded-md max-[900px]:aspect-3/2 max-[900px]:h-auto`;
+// widths differ, rather than to a common aspect. Below 1100px the copy spans
+// the full row and the photographs keep a 3/2 aspect instead — a fixed height
+// would turn them into cropped strips next to a half-empty text row, and the
+// loom caption would push the books photograph down off the text.
+const figureFrame = `${zoomFrame} h-[clamp(11rem,18vw,14.5rem)] rounded-md max-[1100px]:aspect-3/2 max-[1100px]:h-auto`;
 const caption = `${scriptAccent} mt-3.5 text-ink`;
 
 export default function AboutPage() {
@@ -191,7 +193,7 @@ export default function AboutPage() {
       </section>
 
       <section className="py-section" aria-labelledby="our-journey">
-        <div className="container grid grid-cols-[1.5fr_0.85fr_0.95fr_auto] items-center gap-[clamp(1.25rem,3vw,2.5rem)] max-[1100px]:grid-cols-[1fr_1fr] max-[1100px]:gap-y-5 max-[900px]:grid-cols-1">
+        <div className="container grid grid-cols-[1.5fr_0.85fr_0.95fr_auto] items-center gap-[clamp(1.25rem,3vw,2.5rem)] max-[1100px]:grid-cols-[1fr_1fr] max-[1100px]:items-start max-[1100px]:gap-y-5 max-[900px]:grid-cols-1">
           <div className="max-[1100px]:col-span-2 max-[900px]:col-span-1">
             <h2 id="our-journey" className="mb-3">
               Our Journey From Us to the Continent

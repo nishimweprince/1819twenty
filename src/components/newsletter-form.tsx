@@ -118,7 +118,7 @@ export function NewsletterForm({
             </svg>
           </button>
         </div>
-        <label className="mt-3 grid grid-cols-[auto_1fr] items-center gap-2 text-[0.76rem] leading-snug text-paper/78">
+        <label className="mt-3 grid grid-cols-[auto_1fr] items-center gap-2 text-left text-[0.76rem] leading-snug text-paper/78">
           <Checkbox
             aria-invalid={Boolean(errors.consent)}
             {...register("consent")}

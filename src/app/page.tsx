@@ -7,10 +7,11 @@ import { PatternStrip } from "@/components/pattern-strip";
 import { PhotoNote } from "@/components/photo-note";
 import { SocialLinks } from "@/components/site-shell";
 import {
-  badgeGold,
+  buttonGold,
   ceremonial,
   ceremonialLg,
   goldRule,
+  withArrow,
   zoomFrame,
   zoomImage,
 } from "@/lib/styles";
@@ -77,7 +78,7 @@ export default function HomePage() {
           sizes="100vw"
         />
 
-                <div
+        <div
           aria-hidden="true"
           className="absolute inset-0 bg-[radial-gradient(44%_86%_at_50%_50%,var(--color-paper)_0%,var(--color-paper)_42%,transparent_100%)]"
         />
@@ -103,8 +104,9 @@ export default function HomePage() {
             — pieces chosen with intention, shipped straight to your door.
           </p>
 
-          {/* Not a control: pressing it would do nothing. */}
-          <p className={`${badgeGold} mb-7`}>Launching soon</p>
+          <Link className={`${buttonGold} ${withArrow} mb-7`} href="/about">
+            Read our story
+          </Link>
 
           <p className="mb-3 text-[0.95rem]">
             Follow along:{" "}

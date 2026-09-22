@@ -22,16 +22,6 @@ const controlBase =
  */
 export const withArrow = "with-arrow";
 
-/**
- * "Launching soon" — a status badge, not a control. It carries buttonGold's
- * look without the pointer, hover or interactive target, because pressing it
- * does nothing, and a control that announces itself and then does nothing is
- * worse than plain text.
- */
-export const badgeGold =
-  "inline-flex items-center justify-center rounded-md border border-gold bg-gold " +
-  "px-6 py-3 text-[0.78rem] font-semibold uppercase tracking-[0.16em] text-ink";
-
 /** Primary action on a paper ground. */
 export const button = `${controlBase} border border-ink bg-ink text-paper hover:border-ink-deep hover:bg-ink-deep`;
 
