@@ -27,43 +27,25 @@ const caption = `${scriptAccent} mt-4.5 text-ink`;
 export default function AboutPage() {
   return (
     <>
-      <section className="grid min-h-[min(72svh,40rem)] grid-cols-2 max-[900px]:grid-cols-1">
-        <div className="flex items-center px-[clamp(1.5rem,5vw,4.5rem)] py-[clamp(2.5rem,6vw,5.5rem)]">
-          <div className="max-w-136">
-            <Image
-              className="mb-6 h-14 w-auto"
-              src="/nav-mark.png"
-              alt="Eighteen Nineteen Twenty"
-              width={400}
-              height={450}
-              priority
-            />
-            <h1 className="mb-4.5 max-w-[16ch]">
-              A name with meaning. A vision without borders.
-            </h1>
-            <p className="m-0 max-w-[46ch] text-[1.05rem] text-ink/75">
-              Eighteen Nineteen Twenty carries the birthdays of the family
-              behind it, and a belief that thoughtful design connects people,
-              places, and purpose.
-            </p>
-          </div>
+      <section className="relative flex min-h-[min(72svh,42rem)] items-center justify-center overflow-hidden max-[700px]:min-h-[36rem]">
+        <div className="absolute inset-0 grid grid-cols-2 max-[700px]:grid-cols-1">
+          <div className="relative"><Image src="/photos/interior-decor.jpg" alt="" fill priority className="object-cover" sizes="(max-width: 700px) 100vw, 50vw" /></div>
+          <div className="relative max-[700px]:hidden"><Image src="/photos/designer-studio.jpg" alt="" fill priority className="object-cover object-[center_32%]" sizes="50vw" /></div>
         </div>
-        <figure className="relative m-0 overflow-hidden max-[900px]:order-first max-[900px]:min-h-88">
-          <Image
-            className="object-cover object-[center_32%]"
-            src="/photos/about-hero.jpg"
-            alt="A styled interior with handwoven wall baskets and a rattan basket"
-            fill
-            priority
-            sizes="(max-width: 900px) 100vw, 50vw"
-          />
-        </figure>
+        <div aria-hidden="true" className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,var(--color-paper)_8%,rgba(245,236,223,0.95)_31%,rgba(245,236,223,0)_68%)] max-[700px]:bg-paper/86" />
+        <div className="container relative z-1 flex flex-col items-center py-10 text-center">
+          <Image src="/hero-emblem.png" alt="Eighteen Nineteen Twenty" width={564} height={535} priority className="h-auto w-[clamp(13rem,26vw,20rem)]" />
+          <p className={`${ceremonial} mt-3 mb-0 max-w-[50ch] leading-[1.8]`}>Fashion and home rooted in heritage — our story, designed for your style.</p>
+        </div>
+        <p className={`${scriptAccent} absolute right-6 top-8 z-1 mb-0 max-w-[8ch] text-center text-paper [text-shadow:0_2px_12px_#172a3a] max-[900px]:hidden`} aria-hidden="true">A more beautiful, more connected world.</p>
       </section>
 
       <section className="border-t border-ink/12 py-24 max-[700px]:py-18">
-        <div className="container grid grid-cols-2 items-center gap-[clamp(2rem,5vw,4.5rem)] max-[900px]:grid-cols-1">
+        <div className="container grid grid-cols-[1fr_1.15fr_auto] items-center gap-[clamp(1.5rem,4vw,4.5rem)] max-[760px]:grid-cols-1">
           <div>
-            <h2 className="mb-4.5">More than a name</h2>
+            <h1 className="mb-3">Our story</h1>
+            <span className={`${goldRule} mb-6`} aria-hidden="true" />
+            <p className={`${ceremonial} mb-6 max-w-[35ch] leading-[1.8]`}>A name with meaning. A vision without borders.</p>
             <div className="max-w-[62ch]">
               <p>
                 What began as a personal meaning has grown into a wider purpose:
@@ -76,20 +58,21 @@ export default function AboutPage() {
               </p>
             </div>
           </div>
-          <figure className="m-0">
-            <div className={figureFrame}>
+          <figure className="m-0 min-w-0">
+            <div className="relative aspect-3/4 overflow-hidden rounded-md max-[760px]:aspect-3/2">
               <Image
                 className="object-cover"
-                src="/photos/about-story.jpg"
-                alt="Indigo-dyed cloth drying in the open air"
+                src="/photos/indigo-throw.jpg"
+                alt="Indigo throw beside handcrafted vessels and a woven basket"
                 fill
-                sizes="(max-width: 900px) 100vw, 46vw"
+                sizes="(max-width: 760px) 100vw, 46vw"
               />
             </div>
-            <figcaption className={caption}>
+            <figcaption className={`${caption} min-[761px]:hidden`}>
               Timeless pieces, meaningful impact.
             </figcaption>
           </figure>
+          <p className={`${scriptAccent} mb-0 max-[760px]:hidden [writing-mode:vertical-rl]`} aria-hidden="true">Timeless pieces, meaningful impact.</p>
         </div>
       </section>
 
@@ -136,6 +119,7 @@ export default function AboutPage() {
             <h2 id="our-journey" className="mb-4.5">
               Our journey, from us to the continent
             </h2>
+            <span className={`${goldRule} mb-6`} aria-hidden="true" />
             <div className="max-w-[52ch]">
               <p>
                 It began at home, with a deep appreciation for the beauty and
@@ -155,8 +139,8 @@ export default function AboutPage() {
             <div className={figureFrame}>
               <Image
                 className="object-cover"
-                src="/photos/weaving.jpg"
-                alt="A weaver working colored threads on a traditional loom"
+                src="/photos/loom.jpg"
+                alt="Hands weaving indigo and rust-colored textile on a loom"
                 fill
                 sizes="(max-width: 900px) 100vw, 30vw"
               />
@@ -185,19 +169,21 @@ export default function AboutPage() {
             <h2 id="what-we-do" className="mb-4.5">
               What we do
             </h2>
+            <span className={`${goldRule} mb-6`} aria-hidden="true" />
             <p className="mb-0 max-w-[32ch]">
               We curate fashion and home from independent African designers and
               make it easy for you to shop with confidence.
             </p>
           </div>
           <div className="border-l border-ink/12 pl-[clamp(2rem,5vw,4.5rem)] max-[900px]:border-l-0 max-[900px]:border-t max-[900px]:pl-0 max-[900px]:pt-12">
-            <h2 className="mb-9">Our promise</h2>
+            <h2 className="mb-3">Our promise</h2>
+            <span className={`${goldRule} mb-9`} aria-hidden="true" />
             {/* gap-px over an ink wash draws the rules, so the grid stays correct
                 at every breakpoint without per-child border rules. */}
             <div className="grid grid-cols-4 gap-px bg-ink/12 max-[820px]:grid-cols-2 max-[480px]:grid-cols-1">
-              {pillars.map(([icon, title, copy]) => (
+              {pillars.map(([icon, title, copy], index) => (
                 <article className="bg-paper px-6 py-3 max-[820px]:py-6 max-[480px]:px-0" key={title}>
-                  <BrandIcon className="mb-4 size-9 text-terracotta" name={icon} />
+                  <BrandIcon className={`mb-4 size-9 ${index % 2 ? "text-gold" : "text-terracotta"}`} name={icon} />
                   <h3 className="mb-2 text-[1.35rem]">{title}</h3>
                   <p className="mb-0 text-[0.95rem] text-ink/75">{copy}</p>
                 </article>
@@ -212,21 +198,20 @@ export default function AboutPage() {
         className="relative flex min-h-[min(52svh,30rem)] items-center justify-center overflow-hidden text-center"
       >
         <Image
-          className="object-cover object-[center_55%]"
-          src="/photos/landscape.jpg"
+          className="object-cover object-[center_35%]"
+          src="/photos/savanna.jpg"
           alt=""
           fill
           sizes="100vw"
         />
-        {/* ink/78 keeps the heading at 4.82:1 even over the lightest part of the photo */}
-        <div aria-hidden="true" className="absolute inset-0 z-1 bg-ink/78" />
+        <div aria-hidden="true" className="absolute inset-0 z-1 bg-gradient-to-b from-ink/30 via-ink/74 to-ink/45" />
         <div className="container relative z-2">
           <h2 className="mx-auto mb-6 max-w-[20ch] text-paper">
             Fashion and home rooted in heritage. Our story, designed for your
             style.
           </h2>
           <Link className={buttonGold} href="/designers">
-            Explore the collection
+            Meet the designers
           </Link>
         </div>
       </section>

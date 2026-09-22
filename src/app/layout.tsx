@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Bodoni_Moda, Caveat, Karla } from "next/font/google";
+import { Bodoni_Moda, Karla, Pinyon_Script } from "next/font/google";
 import { SiteFooter, SiteHeader } from "@/components/site-shell";
 import "./globals.css";
 
@@ -16,10 +16,10 @@ const sans = Karla({
 });
 
 // Handwritten accent for the short brand phrases only; never body or headings.
-const script = Caveat({
-  variable: "--font-caveat",
+const script = Pinyon_Script({
+  variable: "--font-pinyon",
   subsets: ["latin"],
-  weight: ["500"],
+  weight: "400",
   display: "swap",
 });
 

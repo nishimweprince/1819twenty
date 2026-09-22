@@ -30,6 +30,9 @@ test("primary navigation exposes only Phase 1 destinations", async ({
 }) => {
   await page.goto("/");
   const header = page.locator("header");
+  if (await header.locator("summary").isVisible()) {
+    await header.locator("summary").click();
+  }
   await expect(header.getByRole("link", { name: "Our Story" })).toBeVisible();
   await expect(header.getByRole("link", { name: "Designers" })).toBeVisible();
   await expect(header.getByRole("link", { name: /Shop/i })).toHaveCount(0);
@@ -40,10 +43,8 @@ test("designer form keeps the visitor on the first step when required fields are
 }) => {
   await page.goto("/designers/apply");
   await page.getByRole("button", { name: "Continue" }).click();
-  await expect(
-    page.getByText("Enter the brand or designer name."),
-  ).toBeVisible();
-  await expect(page.getByRole("group", { name: "Your brand" })).toBeVisible();
+  await expect(page.getByText("Enter your full name.")).toBeVisible();
+  await expect(page.getByRole("group", { name: "Contact & brand" })).toBeVisible();
 });
 
 test("commerce routes are not part of Phase 1", async ({ page }) => {

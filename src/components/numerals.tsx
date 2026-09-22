@@ -1,6 +1,6 @@
 /**
  * The brand numerals, set as in the mark: three numbers punctuated by two
- * gold dots. The digits are real text; the dots are decoration, so a screen
+ * terracotta dots. The digits are real text; the dots are decoration, so a screen
  * reader hears "18 19 20" without the separators.
  */
 export function Numerals({ className = "" }: { className?: string }) {
@@ -20,7 +20,7 @@ export function Numerals({ className = "" }: { className?: string }) {
 function Dot() {
   return (
     <span
-      className="inline-block size-[0.14em] translate-y-[-0.28em] rounded-full bg-gold"
+      className="inline-block size-[0.14em] translate-y-[-0.28em] rounded-full bg-terracotta"
       aria-hidden="true"
     />
   );

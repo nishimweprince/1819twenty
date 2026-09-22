@@ -3,10 +3,10 @@
 /* ---------------------------------------------------------------------------
    Eighteen Nineteen Twenty — the four hues of the brand sheet, nothing else.
 
-   ink         #2C3E50  text, dark grounds, primary fills, every border as a tint
-   paper       #F6EBD7  every light section
-   gold        #D4A93B  punctuation only: state markers, rules, focus on dark
-   terracotta  #C1592D  icons and icon discs only. 3.76:1 on paper clears the
+   ink         #1E3448  text, dark grounds, primary fills, every border as a tint
+   paper       #F5ECDF  every light section
+   gold        #D19A3A  state markers, rules, and buttons on dark grounds
+   terracotta  #C75A2A  icons and icon discs only. It clears the
                         3:1 graphics threshold but not 4.5:1 for text, so it
                         never carries a letter.
 
@@ -16,18 +16,18 @@
 --------------------------------------------------------------------------- */
 
 @theme {
-  --color-ink: #2c3e50;
-  --color-ink-deep: #24323f;
-  --color-paper: #f6ebd7;
-  --color-paper-hi: #fbf5ea;
-  --color-gold: #d4a93b;
-  --color-gold-lift: #dfb851;
-  --color-terracotta: #c1592d;
+  --color-ink: #1e3448;
+  --color-ink-deep: #172a3a;
+  --color-paper: #f5ecdf;
+  --color-paper-hi: #fcf8f1;
+  --color-gold: #d19a3a;
+  --color-gold-lift: #dda84a;
+  --color-terracotta: #c75a2a;
   --color-danger: #9a2c14;
 
   --font-display: var(--font-bodoni), Georgia, serif;
   --font-sans: var(--font-karla), ui-sans-serif, system-ui, sans-serif;
-  --font-script: var(--font-caveat), "Segoe Script", cursive;
+  --font-script: var(--font-pinyon), "Segoe Script", cursive;
 
   --radius-sm: 5px;
   --radius-md: 8px;
@@ -135,8 +135,8 @@
     -webkit-tap-highlight-color: transparent;
   }
 
-  /* One focus treatment, two colors. Ink on paper is 9.3:1; gold on ink is
-     4.98:1. Gold on paper would be 1.87:1, so dark grounds opt in explicitly
+  /* One focus treatment, two colors. Ink on paper exceeds 10:1; gold on ink
+     exceeds 5:1. Gold on paper cannot serve as a focus ring, so dark grounds opt in
      via data-ground rather than any element choosing its own ring. */
   :focus-visible {
     outline: 2px solid var(--color-ink);
@@ -151,12 +151,14 @@
   /* The custom checkbox hides its native input, so the global outline would
      land on an invisible element. Mirror the same ring on the wrapper when
      the inner input takes keyboard focus. */
+  .choice-root:has(input:focus-visible),
   .checkbox-root:has(input:focus-visible) {
     outline: 2px solid var(--color-ink);
     outline-offset: 2px;
     border-radius: var(--radius-sm);
   }
 
+  [data-ground="ink"] .choice-root:has(input:focus-visible),
   [data-ground="ink"] .checkbox-root:has(input:focus-visible) {
     outline-color: var(--color-gold);
   }

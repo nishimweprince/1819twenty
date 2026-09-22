@@ -4,7 +4,7 @@ import Link from "next/link";
 import { BrandIcon, type BrandIconName } from "@/components/brand-icons";
 import { Numerals } from "@/components/numerals";
 import { PatternStrip } from "@/components/pattern-strip";
-import { buttonGold, ceremonial, goldRule, scriptAccent } from "@/lib/styles";
+import { buttonGold, ceremonial, goldRule, scriptAccent, scriptFeature } from "@/lib/styles";
 
 export const metadata: Metadata = {
   title: "For Designers",
@@ -16,8 +16,8 @@ const categories = [
   {
     name: "Apparel",
     copy: "Women's, men's and children's wear",
-    src: "/photos/category-apparel.jpg",
-    alt: "Two women in flowing orange and indigo print dresses seated on a bench",
+    src: "/photos/fashion-portrait.jpg",
+    alt: "Woman wearing an indigo and amber printed dress",
   },
   {
     name: "Shoes",
@@ -28,14 +28,14 @@ const categories = [
   {
     name: "Accessories",
     copy: "Jewelry, bags, scarves, hats and more",
-    src: "/photos/category-accessories.jpg",
-    alt: "Strands of hand-painted ochre and indigo glass beads piled together",
+    src: "/photos/beads-bowl.jpg",
+    alt: "Wooden beads and a carved bowl on a stack of books",
   },
   {
     name: "Home décor",
     copy: "Textiles, art, furniture and tabletop",
-    src: "/photos/about-hero.jpg",
-    alt: "Handwoven wall baskets above a rattan basket on a whitewashed bench",
+    src: "/photos/interior-decor.jpg",
+    alt: "Woven basket and patterned textiles in a warm interior",
   },
   {
     name: "Art & craft",
@@ -96,8 +96,8 @@ export default function DesignersPage() {
         <figure className="relative m-0 overflow-hidden max-[900px]:order-first max-[900px]:min-h-88">
           <Image
             className="object-cover"
-            src="/photos/designers-hero.jpg"
-            alt="Three handwoven baskets stacked against a sunlit terracotta wall"
+            src="/photos/designer-studio.jpg"
+            alt="Designer measuring patterned cloth in her studio"
             fill
             priority
             sizes="(max-width: 900px) 100vw, 55vw"
@@ -115,7 +115,7 @@ export default function DesignersPage() {
         </div>
         <div className="grid grid-cols-[1fr_1.3fr_1fr] items-center gap-[clamp(1.5rem,4vw,3.5rem)] px-[clamp(1.5rem,4vw,3.5rem)] py-[clamp(3.5rem,6vw,5rem)] max-[900px]:grid-cols-1 max-[900px]:text-center">
           <p
-            className={`${scriptAccent} m-0 text-paper max-[900px]:order-2`}
+            className={`${scriptFeature} m-0 text-paper max-[900px]:order-2`}
             aria-hidden="true"
           >
             African talent.
@@ -174,7 +174,7 @@ export default function DesignersPage() {
             >
               <div className="relative hover:scale-105 transition-transform duration-300 aspect-4/5 overflow-hidden rounded-md">
                 <Image
-                  className="object-cover hover:*:scale-105 transition-transform duration-300"
+                  className="object-cover transition-transform duration-300"
                   src={category.src}
                   alt={category.alt}
                   fill
@@ -232,13 +232,12 @@ export default function DesignersPage() {
       >
         <Image
           className="object-cover object-[center_55%]"
-          src="/photos/landscape.jpg"
+          src="/photos/savanna.jpg"
           alt=""
           fill
           sizes="100vw"
         />
-        {/* ink/78 keeps the heading at 4.82:1 even over the lightest part of the photo */}
-        <div aria-hidden="true" className="absolute inset-0 z-1 bg-ink/78" />
+        <div aria-hidden="true" className="absolute inset-0 z-1 bg-gradient-to-b from-ink/30 via-ink/74 to-ink/45" />
         <div className="container relative z-2">
           <h2 className="mx-auto mb-6 max-w-[18ch] text-paper">
             Join our community of visionary designers

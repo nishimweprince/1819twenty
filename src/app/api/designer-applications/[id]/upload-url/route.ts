@@ -1,6 +1,7 @@
 import {
-  createLookbookUpload,
+  createPhotoUpload,
   getApplication,
+  listPhotoUploads,
 } from "@/lib/applications/repository";
 import { failure, readJson, success } from "@/lib/api";
 import { verifyDraftToken } from "@/lib/security";
@@ -16,7 +17,7 @@ export async function POST(
   if (!parsed.success)
     return failure(
       "VALIDATION_ERROR",
-      "Check the selected lookbook file.",
+      "Check the selected photo.",
       422,
       { fieldErrors: zodFieldErrors(parsed.error) },
     );
@@ -35,7 +36,10 @@ export async function POST(
         "This application can no longer accept an upload.",
         409,
       );
-    const upload = await createLookbookUpload(id, parsed.data.fileName);
+    const files = await listPhotoUploads(id);
+    if (files.length >= 5)
+      return failure("PHOTO_LIMIT", "This application already has five uploaded photos.", 409);
+    const upload = await createPhotoUpload(id, parsed.data.fileName);
     return success({
       path: upload.path,
       token: upload.token,

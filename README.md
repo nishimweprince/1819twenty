@@ -24,7 +24,7 @@ npm run test:e2e
 
 ## Supabase
 
-Apply `supabase/migrations/001_phase_one.sql` in the Supabase SQL editor. It creates the private application table, upload bucket, rate limiter, and draft-cleanup function. Keep the service-role key server-side.
+Apply `supabase/migrations/001_phase_one.sql`, then `supabase/migrations/002_application_questions.sql`, in the Supabase SQL editor before deploying the updated designer form. The migrations create the private application table and photo bucket, rate limiter, and draft-cleanup function. Keep the service-role key server-side.
 
 ## Provider setup
 

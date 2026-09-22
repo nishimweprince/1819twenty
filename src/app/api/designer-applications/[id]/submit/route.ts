@@ -1,7 +1,7 @@
 import {
   finalizeApplication,
   getApplication,
-  verifyLookbook,
+  verifyUploads,
 } from "@/lib/applications/repository";
 import { failure, readJson, success } from "@/lib/api";
 import { sendApplicationEmails } from "@/lib/email";
@@ -43,11 +43,11 @@ export async function POST(
 
     if (
       existing.status !== "submitted" &&
-      !(await verifyLookbook(id, parsed.data.uploadPath))
+      !(await verifyUploads(id, parsed.data.uploadPaths))
     ) {
       return failure(
         "UPLOAD_MISSING",
-        "The lookbook upload is incomplete. Upload it again.",
+        "One or more photo uploads are incomplete. Upload them again.",
         422,
         { retryable: true },
       );
@@ -58,7 +58,7 @@ export async function POST(
         ? existing
         : await finalizeApplication(
             id,
-            parsed.data.uploadPath,
+            parsed.data.uploadPaths,
             parsed.data.idempotencyKey,
           );
     const emailStatus = await sendApplicationEmails(application);

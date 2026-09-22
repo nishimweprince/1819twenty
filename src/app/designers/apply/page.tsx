@@ -16,8 +16,8 @@ export default function DesignerApplicationPage() {
             <h1 className="mb-0 max-w-[10ch]">Tell us what you make.</h1>
           </div>
           <p className="max-w-[38ch] text-[1.08rem]">
-            Set aside about ten minutes. You will need your contact details,
-            collection information, and one lookbook or product image.
+            Set aside about fifteen minutes. You will need your contact details,
+            a few words about your brand and production, and 3–5 photos of your work.
           </p>
         </div>
         <DesignerApplicationForm />

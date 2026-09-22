@@ -19,9 +19,6 @@ export const button = `${controlBase} border border-ink bg-ink text-paper hover:
 /** Secondary action on a paper ground. Fills with its own color, never gold. */
 export const buttonSecondary = `${controlBase} border border-ink/45 bg-transparent text-ink hover:border-ink hover:bg-ink/8`;
 
-/** Home-page secondary action. Rests as an outline, fills to primary on hover. */
-export const buttonHome = `${controlBase} border border-ink/45 bg-transparent text-ink hover:border-ink hover:bg-ink hover:text-paper`;
-
 /** Action on an ink ground, where gold is legible at 4.98:1. */
 export const buttonGold = `${controlBase} border border-gold bg-gold text-ink hover:border-gold-lift hover:bg-gold-lift`;
 
@@ -37,7 +34,7 @@ export const fieldLabel = "text-[0.9rem] font-semibold";
 
 export const fieldHint = "text-[0.82rem] text-ink/75";
 
-/** Muted body copy. ink/75 is 4.75:1 on paper — ink/70 falls to 4.15:1. */
+/** Muted body copy. Keep the ink tint above the text contrast threshold. */
 export const muted = "text-ink/75";
 
 /**
@@ -46,7 +43,10 @@ export const muted = "text-ink/75";
  * Color is set at the call site — text-ink on paper, text-paper on ink.
  */
 export const scriptAccent =
-  "font-script text-[clamp(1.5rem,2.2vw,1.9rem)] leading-[1.15] tracking-[0.01em]";
+  "font-script text-[clamp(2rem,3vw,2.75rem)] leading-[1.1] tracking-[0.01em]";
+
+export const scriptFeature =
+  "font-script text-[clamp(2.6rem,4.2vw,3.6rem)] leading-[1.1]";
 
 /**
  * The one tracked-caps style on the site, reserved for text that imitates an

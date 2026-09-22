@@ -4,802 +4,276 @@ import { ChangeEvent, useCallback, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@supabase/supabase-js";
-import {
-  useForm,
-  useWatch,
-  type FieldError,
-  type FieldErrors,
-  type UseFormRegisterReturn,
-} from "react-hook-form";
+import { useForm, useWatch, type FieldErrors, type FieldError, type UseFormRegisterReturn } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { productCategories, sizeCount } from "@/lib/validation";
+import {
+  allowedUploadTypes, MAX_UPLOAD_BYTES, designerApplicationBaseSchema,
+  applicationCategories, categoryLabels, businessAges, businessAgeLabels,
+  makerTypes, makerLabels, capacityRanges, capacityLabels,
+  shippingCapabilities, shippingLabels, platformGoals, goalLabels,
+  eventInterestOptions, eventInterestLabels,
+} from "@/lib/validation";
 import { isStorageConfigured, simulatedReference } from "@/lib/submission";
 import { Checkbox } from "./ui/checkbox";
-import { Select } from "./ui/select";
+import { Radio } from "./ui/radio";
 import { Turnstile } from "./turnstile";
-import {
-  button,
-  buttonSecondary,
-  fieldHint,
-  fieldLabel,
-  input as inputClass,
-  textarea as textareaClass,
-} from "@/lib/styles";
+import { button, buttonSecondary, fieldHint, fieldLabel, input as inputClass, textarea as textareaClass } from "@/lib/styles";
 
-const steps = [
-  "Your brand",
-  "Your collection",
-  "Story & lookbook",
-  "Review",
-] as const;
-const allowedTypes = [
-  "application/pdf",
-  "image/jpeg",
-  "image/png",
-  "image/webp",
-];
-const maxFileSize = 20 * 1024 * 1024;
-
-const applicationSchema = z
-  .object({
-    brandName: z
-      .string()
-      .trim()
-      .min(2, "Enter the brand or designer name.")
-      .max(120),
-    contactName: z
-      .string()
-      .trim()
-      .min(2, "Enter the primary contact name.")
-      .max(120),
-    email: z.email("Enter a valid email address.").max(254),
-    phoneWhatsapp: z
-      .string()
-      .trim()
-      .min(5, "Enter a phone or WhatsApp number.")
-      .max(80),
-    countryCity: z
-      .string()
-      .trim()
-      .min(3, "Enter the city and country.")
-      .max(160),
-    websiteSocial: z
-      .string()
-      .trim()
-      .min(2, "Enter a website or social handle.")
-      .max(300),
-    productCategory: z.enum(productCategories, {
-      message: "Choose a product category.",
-    }),
-    skuCount: z
-      .string()
-      .refine(
-        (value) => /^\d+$/.test(value) && Number(value) >= 10,
-        "At least 10 available items are required.",
-      ),
-    includesApparel: z.boolean(),
-    sizeRange: z.string().trim().max(500),
-    confirmsWholesale: z.literal(true, {
-      message: "Confirm per-unit wholesale pricing.",
-    }),
-    confirmsDirectShipping: z.literal(true, {
-      message: "Confirm direct shipping capability.",
-    }),
-    brandStory: z
-      .string()
-      .trim()
-      .min(40, "Tell us a little more, at least 40 characters.")
-      .max(5000),
-    additionalNotes: z.string().trim().max(3000),
-    privacyConsent: z.literal(true, {
-      message: "Consent is required to review your application.",
-    }),
-    marketingConsent: z.boolean(),
-  })
-  .superRefine((input, context) => {
-    if (input.includesApparel && sizeCount(input.sizeRange) < 5) {
-      context.addIssue({
-        code: "custom",
-        path: ["sizeRange"],
-        message: "List at least five sizes, separated by commas.",
-      });
-    }
-  });
-
+const steps = ["Contact & brand", "About the brand", "Production & fulfillment", "Portfolio", "Fit & goals", "Review"] as const;
+const applicationSchema = designerApplicationBaseSchema.omit({ consentedAt: true, consentCopyVersion: true, idempotencyKey: true, website: true, turnstileToken: true }).superRefine((values, context) => {
+  if (values.sellsOnline && !values.onlineChannels.trim()) context.addIssue({ code: "custom", path: ["onlineChannels"], message: "Tell us where you sell online." });
+});
 type FormValues = z.input<typeof applicationSchema>;
-
 const stepFields: Array<Array<keyof FormValues>> = [
-  [
-    "brandName",
-    "contactName",
-    "email",
-    "phoneWhatsapp",
-    "countryCity",
-    "websiteSocial",
-  ],
-  [
-    "productCategory",
-    "skuCount",
-    "sizeRange",
-    "confirmsWholesale",
-    "confirmsDirectShipping",
-  ],
-  ["brandStory", "privacyConsent"],
+  ["fullName", "brandName", "email", "phoneWhatsapp", "countryCity", "socialHandles", "websiteUrl"],
+  ["categories", "brandStory", "yearsInBusiness", "madeBy", "madeWhere"],
+  ["sellsOnline", "onlineChannels", "monthlyCapacity", "wholesaleExportExperience", "shippingCapability"],
+  ["lookbookUrl"],
+  ["whyJoin", "goals", "additionalNotes", "eventInterest", "privacyConsent", "marketingConsent"],
   [],
 ];
-
-const categoryOptions = [
-  { value: "women", label: "Women's" },
-  { value: "men", label: "Men's" },
-  { value: "kids", label: "Kids" },
-  { value: "home", label: "Home" },
-  { value: "multiple", label: "Multiple" },
-] as const;
-
 const fieldWrap = "grid gap-1.5";
-const fieldFull = "col-span-full grid gap-1.5";
 const gridTwo = "grid grid-cols-2 items-start gap-6 max-[620px]:grid-cols-1";
-const fieldsetBase = "m-0 border-0 p-0";
-const legendBase =
-  "mb-3 font-display text-[clamp(1.7rem,3vw,2.6rem)] leading-tight";
-const introBase = "mb-9 max-w-[58ch] text-ink/75";
-const checkRow =
-  "grid grid-cols-[auto_1fr] items-start gap-2.5 text-[0.9rem] leading-relaxed [&>span:first-child]:mt-0.5";
-const checkGroup =
-  "col-span-full mt-3 grid items-start gap-4.5 border-t border-ink/12 pt-6";
+const choiceRow = "grid grid-cols-[auto_1fr] items-start gap-2.5 text-[0.92rem] leading-relaxed [&>span:first-child]:mt-0.5";
 
 function ErrorText({ children }: { children: React.ReactNode }) {
-  return (
-    <span className="flex items-center gap-1.5 text-[0.82rem] font-semibold text-danger">
-      <span
-        aria-hidden="true"
-        className="inline-flex size-4 flex-none items-center justify-center rounded-full bg-danger text-[0.66rem] font-bold text-paper"
-      >
-        !
-      </span>
-      {children}
-    </span>
-  );
+  return <span className="text-[0.82rem] font-semibold text-danger" role="alert">{children}</span>;
 }
 
-function Field({
-  label,
-  hint,
-  error,
-  required = true,
-  children,
-}: {
-  label: string;
-  hint?: string;
-  error?: FieldError;
-  required?: boolean;
-  children: React.ReactNode;
+function TextField({ label, error, registration, required = true, hint, type = "text", autoComplete }: {
+  label: string; error?: FieldError; registration: UseFormRegisterReturn; required?: boolean; hint?: string; type?: string; autoComplete?: string;
 }) {
-  return (
-    <label className={fieldWrap}>
-      <span className={fieldLabel}>
-        {label}
-        {required ? " *" : ""}
-      </span>
-      {children}
-      {hint ? <span className={fieldHint}>{hint}</span> : null}
-      {error?.message ? <ErrorText>{error.message}</ErrorText> : null}
-    </label>
-  );
+  return <label className={fieldWrap}>
+    <span className={fieldLabel}>{label}{required ? " *" : ""}</span>
+    <input className={inputClass} type={type} autoComplete={autoComplete} aria-invalid={Boolean(error)} {...registration} />
+    {hint ? <span className={fieldHint}>{hint}</span> : null}
+    {error?.message ? <ErrorText>{error.message}</ErrorText> : null}
+  </label>;
 }
 
-function TextField({
-  label,
-  hint,
-  error,
-  required,
-  type = "text",
-  autoComplete,
-  registration,
-}: {
-  label: string;
-  hint?: string;
-  error?: FieldError;
-  required?: boolean;
-  type?: string;
-  autoComplete?: string;
-  registration: UseFormRegisterReturn;
+function SelectField({ label, error, registration, options }: {
+  label: string; error?: FieldError; registration: UseFormRegisterReturn; options: readonly string[];
 }) {
-  return (
-    <Field label={label} hint={hint} error={error} required={required}>
-      <input
-        className={inputClass}
-        type={type}
-        autoComplete={autoComplete}
-        aria-invalid={Boolean(error)}
-        {...registration}
-      />
-    </Field>
-  );
+  const labels: Record<string, string> = { ...businessAgeLabels, ...makerLabels, ...capacityLabels, ...shippingLabels, ...eventInterestLabels };
+  return <label className={fieldWrap}>
+    <span className={fieldLabel}>{label} *</span>
+    <select className={inputClass} aria-invalid={Boolean(error)} defaultValue="" {...registration}>
+      <option value="" disabled>Choose one</option>
+      {options.map((value) => <option key={value} value={value}>{labels[value] ?? value}</option>)}
+    </select>
+    {error?.message ? <ErrorText>{error.message}</ErrorText> : null}
+  </label>;
+}
+
+function ChoiceGroup({ legend, error, children }: { legend: string; error?: FieldError; children: React.ReactNode }) {
+  return <fieldset className="col-span-full grid gap-3 border-0 p-0">
+    <legend className={`${fieldLabel} mb-3`}>{legend} *</legend>
+    {children}
+    {error?.message ? <ErrorText>{error.message}</ErrorText> : null}
+  </fieldset>;
+}
+
+function validateFiles(files: File[]) {
+  if (files.length < 3 || files.length > 5) return "Upload 3–5 photos of your work.";
+  if (files.some((file) => !allowedUploadTypes.includes(file.type as (typeof allowedUploadTypes)[number]))) return "Use JPEG, PNG, or WebP photos.";
+  if (files.some((file) => file.size > MAX_UPLOAD_BYTES)) return "Each photo must be 20 MB or smaller.";
+  return "";
 }
 
 export function DesignerApplicationForm() {
   const router = useRouter();
   const [step, setStep] = useState(0);
-  const [file, setFile] = useState<File | null>(null);
+  const [files, setFiles] = useState<File[]>([]);
   const [fileError, setFileError] = useState("");
   const [turnstileToken, setTurnstileToken] = useState("");
   const [status, setStatus] = useState<"idle" | "submitting" | "error">("idle");
   const [statusMessage, setStatusMessage] = useState("");
-  const [idempotencyKey] = useState(() => crypto.randomUUID());
-  const handleToken = useCallback(
-    (token: string) => setTurnstileToken(token),
-    [],
-  );
+  const [idempotencyKey, setIdempotencyKey] = useState(() => crypto.randomUUID());
+  const [draftSession, setDraftSession] = useState<{ applicationId: string; draftToken: string; uploadedPaths: string[] } | null>(null);
+  const handleToken = useCallback((token: string) => setTurnstileToken(token), []);
 
-  const {
-    register,
-    handleSubmit,
-    trigger,
-    control,
-    setValue,
-    getValues,
-    formState: { errors },
-  } = useForm<FormValues>({
-    resolver: zodResolver(applicationSchema),
-    mode: "onTouched",
+  const { register, handleSubmit, trigger, control, setValue, getValues, formState: { errors } } = useForm<FormValues>({
+    resolver: zodResolver(applicationSchema), mode: "onTouched",
     defaultValues: {
-      brandName: "",
-      contactName: "",
-      email: "",
-      phoneWhatsapp: "",
-      countryCity: "",
-      websiteSocial: "",
-      productCategory: undefined as unknown as FormValues["productCategory"],
-      skuCount: "",
-      includesApparel: false,
-      sizeRange: "",
-      confirmsWholesale: false as unknown as true,
-      confirmsDirectShipping: false as unknown as true,
-      brandStory: "",
-      additionalNotes: "",
-      privacyConsent: false as unknown as true,
-      marketingConsent: false,
+      fullName: "", brandName: "", email: "", phoneWhatsapp: "", countryCity: "", socialHandles: "", websiteUrl: "",
+      categories: [], brandStory: "", yearsInBusiness: undefined, madeBy: undefined, madeWhere: "",
+      sellsOnline: undefined, onlineChannels: "", monthlyCapacity: undefined, wholesaleExportExperience: undefined,
+      shippingCapability: undefined, lookbookUrl: "", whyJoin: "", goals: [], additionalNotes: "",
+      eventInterest: undefined, privacyConsent: false as true, marketingConsent: false,
     },
   });
+  const sellsOnline = useWatch({ control, name: "sellsOnline" });
+  const wholesaleExportExperience = useWatch({ control, name: "wholesaleExportExperience" });
+  const selectedCategories = useWatch({ control, name: "categories" }) ?? [];
+  const selectedGoals = useWatch({ control, name: "goals" }) ?? [];
+  const values = getValues();
 
-  const includesApparel = useWatch({ control, name: "includesApparel" });
-  const productCategory = useWatch({ control, name: "productCategory" });
-
-  function validateFile(current: File | null) {
-    if (!current) return "Add one lookbook or product image.";
-    if (!allowedTypes.includes(current.type))
-      return "Use a PDF, PNG, JPEG, or WebP file.";
-    if (current.size > maxFileSize) return "The file must be 20 MB or smaller.";
-    return "";
+  function resetUploadSession() {
+    if (draftSession) {
+      setDraftSession(null);
+      setIdempotencyKey(crypto.randomUUID());
+    }
   }
 
-  function selectFile(event: ChangeEvent<HTMLInputElement>) {
-    const selected = event.target.files?.[0] ?? null;
-    setFile(selected);
-    setFileError(selected ? validateFile(selected) : "");
+  function selectFiles(event: ChangeEvent<HTMLInputElement>) {
+    const selected = Array.from(event.target.files ?? []);
+    if (!selected.length) return;
+    resetUploadSession();
+    const next = [...files, ...selected];
+    setFiles(next);
+    setFileError(validateFiles(next));
+    event.target.value = "";
+  }
+
+  function removeFile(index: number) {
+    resetUploadSession();
+    const next = files.filter((_, current) => current !== index);
+    setFiles(next);
+    setFileError(validateFiles(next));
   }
 
   async function next() {
     const valid = await trigger(stepFields[step]);
-    let fileOk = true;
-    if (step === 2) {
-      const message = validateFile(file);
-      setFileError(message);
-      fileOk = !message;
-    }
-    if (!valid || !fileOk) return;
+    const photoMessage = step === 3 ? validateFiles(files) : "";
+    if (step === 3) setFileError(photoMessage);
+    if (!valid || photoMessage) return;
     setStep((current) => Math.min(current + 1, steps.length - 1));
     window.scrollTo({ top: 300, behavior: "smooth" });
   }
 
-  function previous() {
-    setStep((current) => Math.max(current - 1, 0));
-  }
-
   function handleInvalid(formErrors: FieldErrors<FormValues>) {
-    const fileMessage = validateFile(file);
-    if (fileMessage || !file) {
-      setStep(2);
-      setFileError(fileMessage || "Add one lookbook or product image.");
-      window.scrollTo({ top: 300, behavior: "smooth" });
-      return;
-    }
-    // additionalNotes lives on step 2 but is not part of stepFields.
-    if (formErrors.additionalNotes) {
-      setStep(2);
-    } else {
-      const stepWithError = stepFields.findIndex((fields) =>
-        fields.some((field) => formErrors[field]),
-      );
-      if (stepWithError < 0) return;
-      setStep(stepWithError);
-    }
+    const first = stepFields.findIndex((fields) => fields.some((field) => formErrors[field]));
+    const photoMessage = validateFiles(files);
+    const target = first < 0 ? (photoMessage ? 3 : 0) : first;
+    setStep(target);
+    if (target === 3) setFileError(photoMessage);
     window.scrollTo({ top: 300, behavior: "smooth" });
   }
 
-  async function submitApplication(values: FormValues) {
-    const message = validateFile(file);
-    if (message || !file) {
-      setStep(2);
-      setFileError(message || "Add one lookbook or product image.");
-      return;
-    }
-
+  async function submitApplication(formValues: FormValues) {
+    const photoMessage = validateFiles(files);
+    if (photoMessage) { setStep(3); setFileError(photoMessage); return; }
     setStatus("submitting");
     setStatusMessage("Saving your application");
-
-    // Without client storage variables there is nothing to send to: simulate
-    // the submission so the flow can be reviewed end to end. Nothing leaves
-    // the browser, and the confirmation page states that it was simulated.
-    if (
-      !isStorageConfigured({
-        url: process.env.NEXT_PUBLIC_SUPABASE_URL,
-        anonKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-      })
-    ) {
-      router.push(
-        `/designers/apply/received?reference=${encodeURIComponent(simulatedReference(idempotencyKey))}&simulated=1`,
-      );
+    if (!isStorageConfigured({ url: process.env.NEXT_PUBLIC_SUPABASE_URL, anonKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY })) {
+      router.push(`/designers/apply/received?reference=${encodeURIComponent(simulatedReference(idempotencyKey))}&simulated=1`);
       return;
     }
-
-    const payload = {
-      ...values,
-      skuCount: Number(values.skuCount),
-      idempotencyKey,
-      consentedAt: new Date().toISOString(),
-      consentCopyVersion: "2026-09-18",
-      turnstileToken,
-      website: "",
-    };
-
     try {
-      const draftResponse = await fetch("/api/designer-applications/draft", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      const draft = await draftResponse.json();
-      if (!draftResponse.ok || !draft.ok)
-        throw new Error(draft.message ?? "Could not save your application.");
-
-      setStatusMessage("Preparing your secure upload");
-      const uploadResponse = await fetch(
-        `/api/designer-applications/${draft.data.applicationId}/upload-url`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            draftToken: draft.data.draftToken,
-            fileName: file.name,
-            fileType: file.type,
-            fileSize: file.size,
-          }),
-        },
-      );
-      const upload = await uploadResponse.json();
-      if (!uploadResponse.ok || !upload.ok)
-        throw new Error(upload.message ?? "Could not prepare the upload.");
-
+      let session = draftSession;
+      if (!session) {
+        const response = await fetch("/api/designer-applications/draft", {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ...formValues, consentedAt: new Date().toISOString(), consentCopyVersion: "2026-09-22", idempotencyKey, website: "", turnstileToken }),
+        });
+        const draft = await response.json();
+        if (!response.ok || !draft.ok) throw new Error(draft.message ?? "Could not save your application.");
+        session = { applicationId: draft.data.applicationId, draftToken: draft.data.draftToken, uploadedPaths: [] };
+        setDraftSession(session);
+      }
       const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
       const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-      if (!supabaseUrl || !supabaseAnonKey)
-        throw new Error("Application storage is not configured yet.");
+      if (!supabaseUrl || !supabaseAnonKey) throw new Error("Application storage is not configured yet.");
       const supabase = createClient(supabaseUrl, supabaseAnonKey);
-
-      setStatusMessage("Uploading your lookbook");
-      const { error: uploadError } = await supabase.storage
-        .from("designer-lookbooks")
-        .uploadToSignedUrl(upload.data.path, upload.data.token, file, {
-          contentType: file.type,
+      const paths = [...session.uploadedPaths];
+      for (let index = paths.length; index < files.length; index++) {
+        const file = files[index];
+        setStatusMessage(`Uploading photo ${index + 1} of ${files.length}`);
+        const response = await fetch(`/api/designer-applications/${session.applicationId}/upload-url`, {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ draftToken: session.draftToken, fileName: file.name, fileType: file.type, fileSize: file.size }),
         });
-      if (uploadError)
-        throw new Error(
-          "The lookbook upload failed. Check your connection and try again.",
-        );
-
+        const upload = await response.json();
+        if (!response.ok || !upload.ok) throw new Error(upload.message ?? "Could not prepare the photo upload.");
+        const { error } = await supabase.storage.from("designer-lookbooks").uploadToSignedUrl(upload.data.path, upload.data.token, file, { contentType: file.type });
+        if (error) throw new Error(`Photo ${index + 1} could not be uploaded. Try again.`);
+        paths.push(upload.data.path);
+        setDraftSession({ ...session, uploadedPaths: [...paths] });
+      }
       setStatusMessage("Sending your receipt");
-      const finalResponse = await fetch(
-        `/api/designer-applications/${draft.data.applicationId}/submit`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            draftToken: draft.data.draftToken,
-            uploadPath: upload.data.path,
-            idempotencyKey,
-          }),
-        },
-      );
-      const final = await finalResponse.json();
-      if (!finalResponse.ok || !final.ok)
-        throw new Error(
-          final.message ?? "Could not finalize your application.",
-        );
-      router.push(
-        `/designers/apply/received?reference=${encodeURIComponent(final.data.reference)}`,
-      );
+      const response = await fetch(`/api/designer-applications/${session.applicationId}/submit`, {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ draftToken: session.draftToken, uploadPaths: paths, idempotencyKey }),
+      });
+      const result = await response.json();
+      if (!response.ok || !result.ok) throw new Error(result.message ?? "Could not finalize your application.");
+      router.push(`/designers/apply/received?reference=${encodeURIComponent(result.data.reference)}`);
     } catch (error) {
       setStatus("error");
-      setStatusMessage(
-        error instanceof Error
-          ? error.message
-          : "Could not submit the application. Try again.",
-      );
+      setStatusMessage(error instanceof Error ? error.message : "Could not submit your application. Try again.");
     }
   }
 
-  const values = getValues();
-  const categoryLabel =
-    categoryOptions.find((option) => option.value === productCategory)?.label ??
-    "Not selected";
+  return <div className="grid grid-cols-[16rem_1fr] overflow-hidden rounded-md border border-ink/28 bg-paper-hi max-[820px]:grid-cols-1">
+    <aside data-ground="ink" className="bg-ink p-8 text-paper max-[820px]:p-4" aria-label="Application progress">
+      <div className="mb-6 font-display text-[1.35rem] max-[820px]:hidden">Application</div>
+      <ol className="grid list-none gap-2 p-0 max-[820px]:grid-cols-3 max-[620px]:grid-cols-2">
+        {steps.map((label, index) => <li key={label} aria-current={index === step ? "step" : undefined} className={`flex items-center gap-3 text-[0.86rem] ${index <= step ? "text-paper" : "text-paper/66"}`}>
+          <span aria-hidden="true" className={`grid size-7 flex-none place-items-center rounded-full border ${index === step ? "border-gold bg-gold text-ink" : "border-current"}`}>{index < step ? "✓" : index + 1}</span>{label}
+        </li>)}
+      </ol>
+    </aside>
+    <form className="min-w-0 p-[clamp(1.5rem,5vw,4.5rem)]" onSubmit={handleSubmit(submitApplication, handleInvalid)} noValidate>
+      {status === "error" ? <div role="alert" className="mb-6 rounded-md border border-danger/40 bg-danger/8 p-4 text-danger">{statusMessage}</div> : null}
+      {status === "submitting" ? <div role="status" className="mb-6 rounded-md border border-gold/45 bg-gold/18 p-4">{statusMessage}</div> : null}
 
-  return (
-    <div className="grid grid-cols-[16rem_1fr] overflow-hidden rounded-md border border-ink/28 bg-paper-hi max-[820px]:grid-cols-1">
-      <aside
-        data-ground="ink"
-        className="bg-ink p-9 text-paper max-[820px]:p-4.5"
-        aria-label="Application progress"
-      >
-        <div className="mb-6 font-display text-[1.35rem] max-[820px]:hidden">
-          Application
-        </div>
-        <ol className="m-0 grid list-none p-0 max-[820px]:grid-cols-4">
-          {steps.map((label, index) => {
-            const active = index === step;
-            const complete = index < step;
-            return (
-              <li
-                key={label}
-                aria-current={active ? "step" : undefined}
-                className={
-                  "grid grid-cols-[2rem_1fr] items-center gap-3 py-2.5 text-[0.9rem] max-[820px]:grid-cols-1 max-[820px]:justify-items-center max-[820px]:gap-1.5 max-[820px]:text-center " +
-                  (active || complete ? "text-paper" : "text-paper/66")
-                }
-              >
-                <span
-                  aria-hidden="true"
-                  className={
-                    "flex size-7 items-center justify-center rounded-full border " +
-                    (active ? "border-gold bg-gold text-ink" : "border-current")
-                  }
-                >
-                  {complete ? "\u2713" : index + 1}
-                </span>
-                {label}
-              </li>
-            );
-          })}
-        </ol>
-      </aside>
+      {step === 0 ? <fieldset className="border-0 p-0"><legend className="mb-4 font-display text-[2rem]">Contact & brand</legend><p className="mb-8 text-ink/75">Tell us who you are and how to reach you.</p><div className={gridTwo}>
+        <TextField label="Full name" error={errors.fullName} registration={register("fullName")} autoComplete="name" />
+        <TextField label="Brand/business name" error={errors.brandName} registration={register("brandName")} autoComplete="organization" />
+        <TextField label="Email address" error={errors.email} registration={register("email")} type="email" autoComplete="email" />
+        <TextField label="Phone number" error={errors.phoneWhatsapp} registration={register("phoneWhatsapp")} autoComplete="tel" hint="Include your WhatsApp number if it's different." />
+        <TextField label="Country/city based in" error={errors.countryCity} registration={register("countryCity")} />
+        <TextField label="Instagram/social handles" error={errors.socialHandles} registration={register("socialHandles")} hint="An @handle is fine." />
+        <TextField label="Website (if any)" error={errors.websiteUrl} registration={register("websiteUrl")} required={false} type="url" hint="Include https://" />
+      </div></fieldset> : null}
 
-      <form
-        className="min-w-0 p-[clamp(1.5rem,5vw,4.5rem)]"
-        onSubmit={handleSubmit(submitApplication, handleInvalid)}
-        noValidate
-      >
-        {status === "error" ? (
-          <div
-            className="mb-6 flex items-center gap-2.5 rounded-md border border-danger/40 bg-danger/8 px-4 py-3 text-danger"
-            role="alert"
-          >
-            <span
-              aria-hidden="true"
-              className="size-2.5 flex-none rounded-full bg-danger"
-            />
-            {statusMessage}
-          </div>
-        ) : null}
-        {status === "submitting" ? (
-          <div
-            className="mb-6 flex items-center gap-2.5 rounded-md border border-gold/45 bg-gold/18 px-4 py-3"
-            role="status"
-          >
-            <span
-              aria-hidden="true"
-              className="size-2.5 flex-none rounded-full bg-gold"
-            />
-            {statusMessage}
-          </div>
-        ) : null}
+      {step === 1 ? <fieldset className="border-0 p-0"><legend className="mb-4 font-display text-[2rem]">About the brand</legend><p className="mb-8 text-ink/75">Share the story and people behind your work.</p><div className={gridTwo}>
+        <ChoiceGroup legend="8. What category best describes your work?" error={errors.categories as FieldError}>
+          <div className="grid grid-cols-2 gap-3 max-[620px]:grid-cols-1">{applicationCategories.map((value) => <label key={value} className={choiceRow}><Checkbox value={value} aria-invalid={Boolean(errors.categories)} {...register("categories")} /><span>{categoryLabels[value]}</span></label>)}</div>
+        </ChoiceGroup>
+        <label className="col-span-full grid gap-1.5"><span className={fieldLabel}>9. Tell us about your brand and design story *</span><textarea className={textareaClass} aria-invalid={Boolean(errors.brandStory)} {...register("brandStory")} />{errors.brandStory?.message ? <ErrorText>{errors.brandStory.message}</ErrorText> : null}</label>
+        <SelectField label="10. How long have you been in business?" error={errors.yearsInBusiness} registration={register("yearsInBusiness")} options={businessAges} />
+        <SelectField label="11. Who makes your pieces?" error={errors.madeBy} registration={register("madeBy")} options={makerTypes} />
+        <TextField label="11. Where are your pieces made?" error={errors.madeWhere} registration={register("madeWhere")} />
+      </div></fieldset> : null}
 
-        {step === 0 ? (
-          <fieldset className={fieldsetBase}>
-            <legend className={legendBase}>Your brand</legend>
-            <p className={introBase}>
-              Start with the people and place behind the work.
-            </p>
-            <div className={gridTwo}>
-              <TextField
-                label="Brand or designer name"
-                error={errors.brandName}
-                autoComplete="organization"
-                registration={register("brandName")}
-              />
-              <TextField
-                label="Contact name"
-                error={errors.contactName}
-                autoComplete="name"
-                registration={register("contactName")}
-              />
-              <TextField
-                label="Email address"
-                type="email"
-                error={errors.email}
-                autoComplete="email"
-                registration={register("email")}
-              />
-              <TextField
-                label="Phone or WhatsApp"
-                error={errors.phoneWhatsapp}
-                autoComplete="tel"
-                registration={register("phoneWhatsapp")}
-              />
-              <TextField
-                label="Country and city"
-                error={errors.countryCity}
-                autoComplete="country-name"
-                registration={register("countryCity")}
-              />
-              <TextField
-                label="Website or social handle"
-                error={errors.websiteSocial}
-                hint="A full URL or @handle is fine."
-                registration={register("websiteSocial")}
-              />
-            </div>
-          </fieldset>
-        ) : null}
+      {step === 2 ? <fieldset className="border-0 p-0"><legend className="mb-4 font-display text-[2rem]">Production & fulfillment</legend><p className="mb-8 text-ink/75">Help us understand how your work reaches customers.</p><div className={gridTwo}>
+        <ChoiceGroup legend="12. Do you currently sell online?" error={errors.sellsOnline as FieldError}>
+          {[true, false].map((value) => <label key={String(value)} className={choiceRow}><Radio name="sellsOnline" value={String(value)} checked={sellsOnline === value} onChange={() => setValue("sellsOnline", value, { shouldValidate: true, shouldTouch: true })} /><span>{value ? "Yes" : "No"}</span></label>)}
+        </ChoiceGroup>
+        {sellsOnline ? <div className="col-span-full"><TextField label="12. If so, where?" error={errors.onlineChannels} registration={register("onlineChannels")} /></div> : null}
+        <SelectField label="13. What's your current monthly production capacity?" error={errors.monthlyCapacity} registration={register("monthlyCapacity")} options={capacityRanges} />
+        <ChoiceGroup legend="14. Do you have existing wholesale/export experience?" error={errors.wholesaleExportExperience as FieldError}>
+          {[true, false].map((value) => <label key={String(value)} className={choiceRow}><Radio name="wholesaleExportExperience" value={String(value)} checked={wholesaleExportExperience === value} onChange={() => setValue("wholesaleExportExperience", value, { shouldValidate: true, shouldTouch: true })} /><span>{value ? "Yes" : "No"}</span></label>)}
+        </ChoiceGroup>
+        <SelectField label="15. Can you ship internationally, or would you need support with logistics?" error={errors.shippingCapability} registration={register("shippingCapability")} options={shippingCapabilities} />
+      </div></fieldset> : null}
 
-        {step === 1 ? (
-          <fieldset className={fieldsetBase}>
-            <legend className={legendBase}>Your collection</legend>
-            <p className={introBase}>
-              Help us understand what is available and how you can fulfill an
-              order.
-            </p>
-            <div className={gridTwo}>
-              <div className={fieldWrap}>
-                <label className={fieldLabel} htmlFor="product-category">
-                  Product category *
-                </label>
-                <Select
-                  id="product-category"
-                  options={categoryOptions}
-                  value={productCategory ?? ""}
-                  onChange={(value) =>
-                    setValue(
-                      "productCategory",
-                      value as FormValues["productCategory"],
-                      { shouldValidate: true, shouldTouch: true },
-                    )
-                  }
-                  onBlur={() => trigger("productCategory")}
-                  placeholder="Choose one"
-                  invalid={Boolean(errors.productCategory)}
-                  ariaDescribedby={
-                    errors.productCategory
-                      ? "product-category-error"
-                      : undefined
-                  }
-                />
-                {errors.productCategory?.message ? (
-                  <span id="product-category-error">
-                    <ErrorText>{errors.productCategory.message}</ErrorText>
-                  </span>
-                ) : null}
-              </div>
-              <TextField
-                label="Available items or SKUs"
-                type="number"
-                error={errors.skuCount}
-                hint="Minimum 10."
-                registration={register("skuCount")}
-              />
-              <div className={fieldFull}>
-                <label className={checkRow}>
-                  <Checkbox {...register("includesApparel")} />
-                  <span>
-                    <strong>This collection includes apparel.</strong>
-                    <br />
-                    <span className={fieldHint}>
-                      We will ask for the available size range.
-                    </span>
-                  </span>
-                </label>
-              </div>
-              {includesApparel ? (
-                <div className={fieldFull}>
-                  <TextField
-                    label="Size range"
-                    error={errors.sizeRange}
-                    hint="List at least five sizes, separated by commas, for example: XS, S, M, L, XL."
-                    registration={register("sizeRange")}
-                  />
-                </div>
-              ) : null}
-              <div className={checkGroup}>
-                <label className={checkRow}>
-                  <Checkbox
-                    aria-invalid={Boolean(errors.confirmsWholesale)}
-                    {...register("confirmsWholesale")}
-                  />
-                  <span>
-                    I can provide per-unit wholesale pricing without a minimum
-                    order quantity. *
-                  </span>
-                </label>
-                {errors.confirmsWholesale ? (
-                  <ErrorText>{errors.confirmsWholesale.message}</ErrorText>
-                ) : null}
-                <label className={checkRow}>
-                  <Checkbox
-                    aria-invalid={Boolean(errors.confirmsDirectShipping)}
-                    {...register("confirmsDirectShipping")}
-                  />
-                  <span>
-                    I can ship confirmed orders directly to customers in the
-                    United States. *
-                  </span>
-                </label>
-                {errors.confirmsDirectShipping ? (
-                  <ErrorText>{errors.confirmsDirectShipping.message}</ErrorText>
-                ) : null}
-              </div>
-            </div>
-          </fieldset>
-        ) : null}
+      {step === 3 ? <fieldset className="border-0 p-0"><legend className="mb-4 font-display text-[2rem]">Portfolio</legend><p className="mb-8 text-ink/75">Show us examples of your work.</p><div className="grid gap-6">
+        <label className={fieldWrap}><span className={fieldLabel}>16. Upload 3–5 photos of your work *</span><input type="file" multiple accept="image/jpeg,image/png,image/webp" onChange={selectFiles} className="w-full rounded-md border border-dashed border-ink/34 bg-paper px-3 py-3" aria-invalid={Boolean(fileError)} /><span className={fieldHint}>JPEG, PNG, or WebP. Up to 20 MB per photo.</span>{fileError ? <ErrorText>{fileError}</ErrorText> : null}</label>
+        {files.length ? <ul className="grid gap-2 pl-0" aria-label="Selected photos">{files.map((file, index) => <li key={`${file.name}-${file.lastModified}-${index}`} className="flex items-center justify-between gap-3 border-b border-ink/12 py-2"><span className="min-w-0 truncate">{file.name}</span><button type="button" className="text-[0.85rem] font-semibold underline" onClick={() => removeFile(index)} aria-label={`Remove ${file.name}`}>Remove</button></li>)}</ul> : null}
+        <TextField label="17. Link to a lookbook or catalog" error={errors.lookbookUrl} registration={register("lookbookUrl")} required={false} type="url" hint="Optional; include https://" />
+      </div></fieldset> : null}
 
-        {step === 2 ? (
-          <fieldset className={fieldsetBase}>
-            <legend className={legendBase}>Story and lookbook</legend>
-            <p className={introBase}>
-              Show us the collection and tell us what the work carries with it.
-            </p>
-            <div className={gridTwo}>
-              <label className={fieldFull}>
-                <span className={fieldLabel}>Product photos or lookbook *</span>
-                <input
-                  className="flex min-h-[2.75rem] w-full cursor-pointer items-center gap-3 rounded-md border border-dashed border-ink/34 bg-paper px-2.5 py-2 text-ink/75 transition-colors duration-150 hover:border-ink/55 focus-visible:border-ink focus-within:border-ink aria-invalid:border-danger file:mr-3 file:cursor-pointer file:rounded-sm file:border file:border-ink/34 file:bg-paper-hi file:px-3.5 file:py-2 file:font-semibold file:text-ink file:transition-colors hover:file:bg-ink/8"
-                  type="file"
-                  accept=".pdf,.png,.jpg,.jpeg,.webp"
-                  onChange={selectFile}
-                  aria-invalid={Boolean(fileError)}
-                />
-                <span className={fieldHint}>
-                  One PDF, PNG, JPEG, or WebP file. Maximum 20 MB.
-                </span>
-                {file && !fileError ? (
-                  <span className={fieldHint}>Selected: {file.name}</span>
-                ) : null}
-                {fileError ? <ErrorText>{fileError}</ErrorText> : null}
-              </label>
-              <label className={fieldFull}>
-                <span className={fieldLabel}>Brand story or description *</span>
-                <textarea
-                  className={textareaClass}
-                  aria-invalid={Boolean(errors.brandStory)}
-                  {...register("brandStory")}
-                />
-                {errors.brandStory ? (
-                  <ErrorText>{errors.brandStory.message}</ErrorText>
-                ) : null}
-              </label>
-              <label className={fieldFull}>
-                <span className={fieldLabel}>Additional notes</span>
-                <textarea
-                  className={textareaClass}
-                  {...register("additionalNotes")}
-                />
-              </label>
-              <div className={checkGroup}>
-                <label className={checkRow}>
-                  <Checkbox
-                    aria-invalid={Boolean(errors.privacyConsent)}
-                    {...register("privacyConsent")}
-                  />
-                  <span>
-                    I authorize Eighteen Nineteen Twenty to process this
-                    information and review the uploaded material for partnership
-                    evaluation. I have read the{" "}
-                    <Link href="/privacy" target="_blank">
-                      privacy notice
-                    </Link>
-                    . *
-                  </span>
-                </label>
-                {errors.privacyConsent ? (
-                  <ErrorText>{errors.privacyConsent.message}</ErrorText>
-                ) : null}
-                <label className={checkRow}>
-                  <Checkbox {...register("marketingConsent")} />
-                  <span>
-                    Also send me occasional Eighteen Nineteen Twenty news. This
-                    is optional and requires email confirmation.
-                  </span>
-                </label>
-              </div>
-              <Turnstile onToken={handleToken} />
-            </div>
-          </fieldset>
-        ) : null}
+      {step === 4 ? <fieldset className="border-0 p-0"><legend className="mb-4 font-display text-[2rem]">Fit & goals</legend><p className="mb-8 text-ink/75">Tell us what you hope to build with us.</p><div className="grid gap-7">
+        <label className={fieldWrap}><span className={fieldLabel}>18. Why do you want to join Eighteen Nineteen Twenty? *</span><textarea className={textareaClass} aria-invalid={Boolean(errors.whyJoin)} {...register("whyJoin")} />{errors.whyJoin?.message ? <ErrorText>{errors.whyJoin.message}</ErrorText> : null}</label>
+        <ChoiceGroup legend="19. What are you hoping to gain from this platform?" error={errors.goals as FieldError}><div className="grid grid-cols-2 gap-3 max-[620px]:grid-cols-1">{platformGoals.map((value) => <label key={value} className={choiceRow}><Checkbox value={value} aria-invalid={Boolean(errors.goals)} {...register("goals")} /><span>{goalLabels[value]}</span></label>)}</div></ChoiceGroup>
+        <label className={fieldWrap}><span className={fieldLabel}>20. Anything else you&rsquo;d like us to know?</span><textarea className={textareaClass} {...register("additionalNotes")} /></label>
+        <ChoiceGroup legend="21. Interested in a 2027 Africa international fashion and goods event?" error={errors.eventInterest as FieldError}>{eventInterestOptions.map((value) => <label key={value} className={choiceRow}><Radio value={value} aria-invalid={Boolean(errors.eventInterest)} {...register("eventInterest")} /><span>{eventInterestLabels[value]}</span></label>)}</ChoiceGroup>
+        <div className="grid gap-4 border-t border-ink/12 pt-6"><label className={choiceRow}><Checkbox aria-invalid={Boolean(errors.privacyConsent)} {...register("privacyConsent")} /><span>I authorize Eighteen Nineteen Twenty to process my information and review my photos for partnership evaluation. I have read the <Link href="/privacy" target="_blank">privacy notice</Link>. *</span></label>{errors.privacyConsent?.message ? <ErrorText>{errors.privacyConsent.message}</ErrorText> : null}
+          <label className={choiceRow}><Checkbox {...register("marketingConsent")} /><span>Also send me occasional Eighteen Nineteen Twenty news. This is optional and requires email confirmation.</span></label></div>
+        <Turnstile onToken={handleToken} />
+      </div></fieldset> : null}
 
-        {step === 3 ? (
-          <fieldset className={fieldsetBase}>
-            <legend className={legendBase}>Review your application</legend>
-            <p className={introBase}>
-              Check the details below before sending your work to our team.
-            </p>
-            <dl className="mt-6 mb-0 border-t border-ink/12">
-              {[
-                ["Brand", values.brandName],
-                ["Contact", values.contactName],
-                ["Email", values.email],
-                ["Phone / WhatsApp", values.phoneWhatsapp],
-                ["Based in", values.countryCity],
-                ["Website / social", values.websiteSocial],
-                ["Category", categoryLabel],
-                ["Available items", values.skuCount],
-                [
-                  "Apparel sizes",
-                  values.includesApparel ? values.sizeRange : "Not applicable",
-                ],
-                ["Lookbook", file?.name ?? "Missing"],
-                ["Brand story", values.brandStory],
-                [
-                  "Marketing updates",
-                  values.marketingConsent ? "Yes, confirmation required" : "No",
-                ],
-              ].map(([term, value]) => (
-                <div
-                  className="grid grid-cols-[12rem_1fr] gap-4.5 border-b border-ink/12 py-3.5 max-[620px]:grid-cols-1 max-[620px]:gap-0.5"
-                  key={term}
-                >
-                  <dt className="text-ink/75">{term}</dt>
-                  <dd className="m-0 font-semibold [overflow-wrap:anywhere]">
-                    {value}
-                  </dd>
-                </div>
-              ))}
-            </dl>
-          </fieldset>
-        ) : null}
+      {step === 5 ? <fieldset className="border-0 p-0"><legend className="mb-4 font-display text-[2rem]">Review your application</legend><p className="mb-8 text-ink/75">Check your answers before sending them to our team.</p><dl className="border-t border-ink/12">{[
+        ["Full name", values.fullName], ["Brand/business name", values.brandName], ["Email address", values.email], ["Phone / WhatsApp", values.phoneWhatsapp], ["Country/city", values.countryCity], ["Social handles", values.socialHandles], ["Website", values.websiteUrl || "Not provided"],
+        ["Categories", selectedCategories.map((v) => categoryLabels[v]).join(", ")], ["Brand story", values.brandStory], ["Years in business", businessAgeLabels[values.yearsInBusiness]], ["Made by", makerLabels[values.madeBy]], ["Made where", values.madeWhere],
+        ["Sells online", values.sellsOnline ? "Yes" : "No"], ["Online channels", values.sellsOnline ? values.onlineChannels : "Not applicable"], ["Monthly capacity", capacityLabels[values.monthlyCapacity]], ["Wholesale/export experience", values.wholesaleExportExperience ? "Yes" : "No"], ["Shipping", shippingLabels[values.shippingCapability]],
+        ["Photos", files.map((file) => file.name).join(", ")], ["Lookbook", values.lookbookUrl || "Not provided"], ["Why join", values.whyJoin], ["Goals", selectedGoals.map((v) => goalLabels[v]).join(", ")], ["Additional notes", values.additionalNotes || "Not provided"], ["2027 event", eventInterestLabels[values.eventInterest]], ["Privacy consent", "Yes"], ["Marketing updates", values.marketingConsent ? "Yes" : "No"],
+      ].map(([term, value]) => <div key={term} className="grid grid-cols-[12rem_1fr] gap-4 border-b border-ink/12 py-3 max-[620px]:grid-cols-1 max-[620px]:gap-0.5"><dt className="text-ink/75">{term}</dt><dd className="m-0 [overflow-wrap:anywhere]">{value}</dd></div>)}</dl></fieldset> : null}
 
-        <div
-          className="absolute left-[-10000px] h-px w-px overflow-hidden"
-          aria-hidden="true"
-        >
-          <label>
-            Website
-            <input name="website" tabIndex={-1} autoComplete="off" />
-          </label>
-        </div>
-        <div className="mt-9 flex items-center justify-between border-t border-ink/12 pt-6">
-          <button
-            className={buttonSecondary}
-            type="button"
-            onClick={previous}
-            disabled={step === 0 || status === "submitting"}
-          >
-            Back
-          </button>
-          {step < 3 ? (
-            <button className={button} type="button" onClick={next}>
-              Continue
-            </button>
-          ) : (
-            <button
-              className={button}
-              type="submit"
-              disabled={status === "submitting"}
-            >
-              {status === "submitting" ? "Sending" : "Send application"}
-            </button>
-          )}
-        </div>
-      </form>
-    </div>
-  );
+      <div className="mt-9 flex items-center justify-between gap-4 border-t border-ink/12 pt-6"><button className={buttonSecondary} type="button" onClick={() => setStep((current) => Math.max(current - 1, 0))} disabled={step === 0 || status === "submitting"}>Back</button>{step < 5 ? <button className={button} type="button" onClick={next}>Continue</button> : <button className={button} type="submit" disabled={status === "submitting"}>{status === "submitting" ? "Sending" : "Send application"}</button>}</div>
+    </form>
+  </div>;
 }
