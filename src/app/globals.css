@@ -148,18 +148,20 @@
     outline-color: var(--color-gold);
   }
 
-  /* The custom checkbox hides its native input, so the global outline would
-     land on an invisible element. Mirror the same ring on the wrapper when
-     the inner input takes keyboard focus. */
+  /* The custom checkbox, radio, and file picker hide their native input, so
+     the global outline would land on an invisible element. Mirror the same
+     ring on the wrapper when the inner input takes keyboard focus. */
   .choice-root:has(input:focus-visible),
-  .checkbox-root:has(input:focus-visible) {
+  .checkbox-root:has(input:focus-visible),
+  .file-root:has(input:focus-visible) {
     outline: 2px solid var(--color-ink);
     outline-offset: 2px;
     border-radius: var(--radius-sm);
   }
 
   [data-ground="ink"] .choice-root:has(input:focus-visible),
-  [data-ground="ink"] .checkbox-root:has(input:focus-visible) {
+  [data-ground="ink"] .checkbox-root:has(input:focus-visible),
+  [data-ground="ink"] .file-root:has(input:focus-visible) {
     outline-color: var(--color-gold);
   }
 

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { BrandIcon, type BrandIconName } from "@/components/brand-icons";
 import { Numerals } from "@/components/numerals";
 import { PatternStrip } from "@/components/pattern-strip";
-import { buttonGold, ceremonial, goldRule, scriptAccent, scriptFeature } from "@/lib/styles";
+import { buttonGold, ceremonial, goldRule, scriptAccent, scriptFeature, zoomFrame, zoomImage } from "@/lib/styles";
 
 export const metadata: Metadata = {
   title: "For Designers",
@@ -23,7 +23,7 @@ const categories = [
     name: "Shoes",
     copy: "Handcrafted and contemporary footwear",
     src: "/photos/category-shoes.jpg",
-    alt: "A pair of olive leather slides resting on pale stone blocks",
+    alt: "Cognac leather loafers and a woven mule styled with beads and carved bowls",
   },
   {
     name: "Accessories",
@@ -41,7 +41,7 @@ const categories = [
     name: "Art & craft",
     copy: "Handmade and heritage pieces",
     src: "/photos/category-art.jpg",
-    alt: "A potter shaping a calabash bowl among rows of finished vessels",
+    alt: "Carved wooden figures, patterned vases, a carved bowl, and beads on a rustic table",
   },
 ] as const;
 
@@ -93,13 +93,13 @@ export default function DesignersPage() {
             </p>
           </div>
         </div>
-        <figure className="relative m-0 overflow-hidden max-[900px]:order-first max-[900px]:min-h-88">
+        <figure className={`${zoomFrame} m-0 max-[900px]:order-first max-[900px]:min-h-88`}>
           <Image
-            className="object-cover"
+            className={zoomImage}
             src="/photos/designer-studio.jpg"
             alt="Designer measuring patterned cloth in her studio"
             fill
-            priority
+            preload
             sizes="(max-width: 900px) 100vw, 55vw"
           />
         </figure>
@@ -172,9 +172,9 @@ export default function DesignersPage() {
               className="m-0 max-[1000px]:min-w-[min(62vw,20rem)] max-[1000px]:snap-start"
               key={category.name}
             >
-              <div className="relative hover:scale-105 transition-transform duration-300 aspect-4/5 overflow-hidden rounded-md">
+              <div className={`${zoomFrame} aspect-4/5 rounded-md`}>
                 <Image
-                  className="object-cover transition-transform duration-300"
+                  className={zoomImage}
                   src={category.src}
                   alt={category.alt}
                   fill
@@ -237,7 +237,7 @@ export default function DesignersPage() {
           fill
           sizes="100vw"
         />
-        <div aria-hidden="true" className="absolute inset-0 z-1 bg-gradient-to-b from-ink/30 via-ink/74 to-ink/45" />
+        <div aria-hidden="true" className="absolute inset-0 z-1 bg-gradient-to-b from-ink/45 via-ink/78 to-ink/55" />
         <div className="container relative z-2">
           <h2 className="mx-auto mb-6 max-w-[18ch] text-paper">
             Join our community of visionary designers

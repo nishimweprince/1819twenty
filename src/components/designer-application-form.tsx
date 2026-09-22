@@ -1,10 +1,10 @@
 "use client";
 
-import { ChangeEvent, useCallback, useState } from "react";
+import { ChangeEvent, useCallback, useId, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@supabase/supabase-js";
-import { useForm, useWatch, type FieldErrors, type FieldError, type UseFormRegisterReturn } from "react-hook-form";
+import { Controller, useForm, useWatch, type Control, type FieldErrors, type FieldError, type Path, type UseFormRegisterReturn } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import {
@@ -16,7 +16,9 @@ import {
 } from "@/lib/validation";
 import { isStorageConfigured, simulatedReference } from "@/lib/submission";
 import { Checkbox } from "./ui/checkbox";
+import { FileInput } from "./ui/file-input";
 import { Radio } from "./ui/radio";
+import { Select } from "./ui/select";
 import { Turnstile } from "./turnstile";
 import { button, buttonSecondary, fieldHint, fieldLabel, input as inputClass, textarea as textareaClass } from "@/lib/styles";
 
@@ -52,18 +54,21 @@ function TextField({ label, error, registration, required = true, hint, type = "
   </label>;
 }
 
-function SelectField({ label, error, registration, options }: {
-  label: string; error?: FieldError; registration: UseFormRegisterReturn; options: readonly string[];
+// The custom Select is a button, not a form control, so it is driven through
+// Controller and labelled by id rather than by a wrapping <label>.
+function SelectField({ label, name, control, error, options }: {
+  label: string; name: Path<FormValues>; control: Control<FormValues>; error?: FieldError; options: readonly string[];
 }) {
+  const id = useId();
   const labels: Record<string, string> = { ...businessAgeLabels, ...makerLabels, ...capacityLabels, ...shippingLabels, ...eventInterestLabels };
-  return <label className={fieldWrap}>
-    <span className={fieldLabel}>{label} *</span>
-    <select className={inputClass} aria-invalid={Boolean(error)} defaultValue="" {...registration}>
-      <option value="" disabled>Choose one</option>
-      {options.map((value) => <option key={value} value={value}>{labels[value] ?? value}</option>)}
-    </select>
+  const selectOptions = options.map((value) => ({ value, label: labels[value] ?? value }));
+  return <div className={fieldWrap}>
+    <label className={fieldLabel} htmlFor={id}>{label} *</label>
+    <Controller name={name} control={control} render={({ field }) => (
+      <Select id={id} name={field.name} options={selectOptions} value={typeof field.value === "string" ? field.value : ""} onChange={field.onChange} onBlur={field.onBlur} invalid={Boolean(error)} placeholder="Choose one" />
+    )} />
     {error?.message ? <ErrorText>{error.message}</ErrorText> : null}
-  </label>;
+  </div>;
 }
 
 function ChoiceGroup({ legend, error, children }: { legend: string; error?: FieldError; children: React.ReactNode }) {
@@ -233,8 +238,8 @@ export function DesignerApplicationForm() {
           <div className="grid grid-cols-2 gap-3 max-[620px]:grid-cols-1">{applicationCategories.map((value) => <label key={value} className={choiceRow}><Checkbox value={value} aria-invalid={Boolean(errors.categories)} {...register("categories")} /><span>{categoryLabels[value]}</span></label>)}</div>
         </ChoiceGroup>
         <label className="col-span-full grid gap-1.5"><span className={fieldLabel}>9. Tell us about your brand and design story *</span><textarea className={textareaClass} aria-invalid={Boolean(errors.brandStory)} {...register("brandStory")} />{errors.brandStory?.message ? <ErrorText>{errors.brandStory.message}</ErrorText> : null}</label>
-        <SelectField label="10. How long have you been in business?" error={errors.yearsInBusiness} registration={register("yearsInBusiness")} options={businessAges} />
-        <SelectField label="11. Who makes your pieces?" error={errors.madeBy} registration={register("madeBy")} options={makerTypes} />
+        <SelectField label="10. How long have you been in business?" name="yearsInBusiness" control={control} error={errors.yearsInBusiness} options={businessAges} />
+        <SelectField label="11. Who makes your pieces?" name="madeBy" control={control} error={errors.madeBy} options={makerTypes} />
         <TextField label="11. Where are your pieces made?" error={errors.madeWhere} registration={register("madeWhere")} />
       </div></fieldset> : null}
 
@@ -243,15 +248,15 @@ export function DesignerApplicationForm() {
           {[true, false].map((value) => <label key={String(value)} className={choiceRow}><Radio name="sellsOnline" value={String(value)} checked={sellsOnline === value} onChange={() => setValue("sellsOnline", value, { shouldValidate: true, shouldTouch: true })} /><span>{value ? "Yes" : "No"}</span></label>)}
         </ChoiceGroup>
         {sellsOnline ? <div className="col-span-full"><TextField label="12. If so, where?" error={errors.onlineChannels} registration={register("onlineChannels")} /></div> : null}
-        <SelectField label="13. What's your current monthly production capacity?" error={errors.monthlyCapacity} registration={register("monthlyCapacity")} options={capacityRanges} />
+        <SelectField label="13. What's your current monthly production capacity?" name="monthlyCapacity" control={control} error={errors.monthlyCapacity} options={capacityRanges} />
         <ChoiceGroup legend="14. Do you have existing wholesale/export experience?" error={errors.wholesaleExportExperience as FieldError}>
           {[true, false].map((value) => <label key={String(value)} className={choiceRow}><Radio name="wholesaleExportExperience" value={String(value)} checked={wholesaleExportExperience === value} onChange={() => setValue("wholesaleExportExperience", value, { shouldValidate: true, shouldTouch: true })} /><span>{value ? "Yes" : "No"}</span></label>)}
         </ChoiceGroup>
-        <SelectField label="15. Can you ship internationally, or would you need support with logistics?" error={errors.shippingCapability} registration={register("shippingCapability")} options={shippingCapabilities} />
+        <SelectField label="15. Can you ship internationally, or would you need support with logistics?" name="shippingCapability" control={control} error={errors.shippingCapability} options={shippingCapabilities} />
       </div></fieldset> : null}
 
       {step === 3 ? <fieldset className="border-0 p-0"><legend className="mb-4 font-display text-[2rem]">Portfolio</legend><p className="mb-8 text-ink/75">Show us examples of your work.</p><div className="grid gap-6">
-        <label className={fieldWrap}><span className={fieldLabel}>16. Upload 3–5 photos of your work *</span><input type="file" multiple accept="image/jpeg,image/png,image/webp" onChange={selectFiles} className="w-full rounded-md border border-dashed border-ink/34 bg-paper px-3 py-3" aria-invalid={Boolean(fileError)} /><span className={fieldHint}>JPEG, PNG, or WebP. Up to 20 MB per photo.</span>{fileError ? <ErrorText>{fileError}</ErrorText> : null}</label>
+        <div className={fieldWrap}><label className={fieldLabel} htmlFor="portfolio-photos">16. Upload 3–5 photos of your work *</label><FileInput id="portfolio-photos" multiple accept="image/jpeg,image/png,image/webp" onChange={selectFiles} aria-invalid={Boolean(fileError)} label="Choose photos" hint="or drop them here" /><span className={fieldHint}>JPEG, PNG, or WebP. Up to 20 MB per photo.</span>{fileError ? <ErrorText>{fileError}</ErrorText> : null}</div>
         {files.length ? <ul className="grid gap-2 pl-0" aria-label="Selected photos">{files.map((file, index) => <li key={`${file.name}-${file.lastModified}-${index}`} className="flex items-center justify-between gap-3 border-b border-ink/12 py-2"><span className="min-w-0 truncate">{file.name}</span><button type="button" className="text-[0.85rem] font-semibold underline" onClick={() => removeFile(index)} aria-label={`Remove ${file.name}`}>Remove</button></li>)}</ul> : null}
         <TextField label="17. Link to a lookbook or catalog" error={errors.lookbookUrl} registration={register("lookbookUrl")} required={false} type="url" hint="Optional; include https://" />
       </div></fieldset> : null}

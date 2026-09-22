@@ -11,12 +11,19 @@ beforeEach(() => {
   vi.stubEnv("NEXT_PUBLIC_SUPABASE_URL", "");
   vi.stubEnv("NEXT_PUBLIC_SUPABASE_ANON_KEY", "");
   window.scrollTo = vi.fn();
+  Element.prototype.scrollIntoView = vi.fn();
 });
 afterEach(() => { cleanup(); vi.unstubAllEnvs(); });
 
 async function continueTo(name: string) {
   fireEvent.click(screen.getByRole("button", { name: "Continue" }));
   await screen.findByRole("group", { name });
+}
+
+// The custom Select is a combobox that commits an option on mousedown.
+function choose(label: RegExp, option: string) {
+  fireEvent.click(screen.getByRole("combobox", { name: label }));
+  fireEvent.mouseDown(screen.getByRole("option", { name: option }));
 }
 
 async function fillThroughReview() {
@@ -33,16 +40,16 @@ async function fillThroughReview() {
   fireEvent.click(screen.getByLabelText("Apparel"));
   fireEvent.click(screen.getByLabelText("Accessories"));
   fireEvent.change(screen.getByLabelText(/^9\. Tell us about/i), { target: { value: "We create each collection with local cloth and a small team of makers." } });
-  fireEvent.change(screen.getByLabelText(/^10\. How long/i), { target: { value: "3_5" } });
-  fireEvent.change(screen.getByLabelText(/^11\. Who/i), { target: { value: "small_team" } });
+  choose(/^10\. How long/i, "3–5 years");
+  choose(/^11\. Who/i, "A small team");
   fireEvent.change(screen.getByLabelText(/^11\. Where/i), { target: { value: "Kigali, Rwanda" } });
   await continueTo("Production & fulfillment");
 
   fireEvent.click(within(screen.getByRole("group", { name: /12\. Do you currently sell online/i })).getByLabelText("Yes"));
   fireEvent.change(screen.getByLabelText(/^12\. If so/i), { target: { value: "Instagram" } });
-  fireEvent.change(screen.getByLabelText(/^13\. What's/i), { target: { value: "20_50" } });
+  choose(/^13\. What's/i, "20–50 pieces");
   fireEvent.click(within(screen.getByRole("group", { name: /14\. Do you have existing/i })).getByLabelText("No"));
-  fireEvent.change(screen.getByLabelText(/^15\. Can you ship/i), { target: { value: "needs_support" } });
+  choose(/^15\. Can you ship/i, "I'd need support with logistics");
   await continueTo("Portfolio");
 
   const files = [1, 2, 3].map((index) => new File(["photo"], `work-${index}.png`, { type: "image/png" }));

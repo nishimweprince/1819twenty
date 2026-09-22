@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useId, useRef, useState } from "react";
+import { fieldFocus } from "@/lib/styles";
 
 export type SelectOption = { value: string; label: string };
 
@@ -132,9 +133,9 @@ export function Select({
         ref={buttonRef}
         id={baseId}
         className={
-          "group flex w-full min-h-[2.75rem] cursor-pointer items-center justify-between gap-2 " +
+          "group flex w-full min-h-11 cursor-pointer items-center justify-between gap-2 " +
           "rounded-md border border-ink/34 bg-paper-hi px-3.5 py-2.5 text-left text-ink " +
-          "transition-colors duration-150 hover:border-ink/55 focus-visible:border-ink " +
+          `transition-colors duration-150 hover:border-ink/55 ${fieldFocus} ` +
           "aria-invalid:border-danger data-placeholder:text-ink/75"
         }
         role="combobox"

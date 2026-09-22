@@ -5,7 +5,9 @@
  * stays greppable and the class list is visible at the call site.
  *
  * Hover rule: an element deepens its own color. Nothing hovers to a different
- * hue, and nothing lifts. Gold is reserved for state, not for hover.
+ * hue, and nothing lifts. Gold is reserved for state, not for hover. The one
+ * motion exception is a showcase photo, which eases in slightly inside its
+ * frame (`zoomFrame` / `zoomImage`).
  */
 
 const controlBase =
@@ -22,11 +24,19 @@ export const buttonSecondary = `${controlBase} border border-ink/45 bg-transpare
 /** Action on an ink ground, where gold is legible at 4.98:1. */
 export const buttonGold = `${controlBase} border border-gold bg-gold text-ink hover:border-gold-lift hover:bg-gold-lift`;
 
+/**
+ * Focus for fields: no outline ring. The border turns ink and an inset shadow
+ * doubles it to 2px, so focus stays visible without spilling past the box.
+ */
+export const fieldFocus =
+  "focus-visible:border-ink focus-visible:outline-none " +
+  "focus-visible:shadow-[inset_0_0_0_1px_var(--color-ink)]";
+
 /** Text and email fields. `aria-invalid` drives the error border. */
 export const input =
   "w-full min-h-[2.75rem] rounded-md border border-ink/34 bg-paper-hi px-3.5 py-2.5 " +
   "text-ink transition-colors duration-150 placeholder:text-ink/75 " +
-  "hover:border-ink/55 focus-visible:border-ink aria-invalid:border-danger";
+  `hover:border-ink/55 ${fieldFocus} aria-invalid:border-danger`;
 
 export const textarea = `${input} min-h-[8.5rem] resize-y leading-relaxed`;
 
@@ -56,3 +66,14 @@ export const ceremonial = "text-[0.72rem] uppercase tracking-[0.24em]";
 
 /** Short gold rule that punctuates a heading or a phrase. */
 export const goldRule = "block h-0.5 w-12 bg-gold";
+
+/**
+ * Showcase photo pair. The frame clips; the image eases in 4% while the
+ * nearest `group` ancestor is hovered, so a whole card can be the hover root.
+ * Call sites add aspect ratio and rounding to the frame.
+ */
+export const zoomFrame = "group relative overflow-hidden";
+
+export const zoomImage =
+  "object-cover transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] " +
+  "group-hover:scale-[1.04] motion-reduce:group-hover:scale-100";
