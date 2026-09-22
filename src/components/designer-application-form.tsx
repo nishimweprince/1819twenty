@@ -501,23 +501,6 @@ export function DesignerApplicationForm() {
         onSubmit={handleSubmit(submitApplication, handleInvalid)}
         noValidate
       >
-        {status === "error" ? (
-          <div
-            role="alert"
-            className="mb-6 rounded-md border border-danger/40 bg-danger/8 p-4 text-danger"
-          >
-            {statusMessage}
-          </div>
-        ) : null}
-        {status === "submitting" ? (
-          <div
-            role="status"
-            className="mb-6 rounded-md border border-gold/45 bg-gold/18 p-4"
-          >
-            {statusMessage}
-          </div>
-        ) : null}
-
         {step === 0 ? (
           <fieldset className="border-0 p-0">
             <legend className="mb-4 font-display text-[2rem]">
@@ -924,6 +907,23 @@ export function DesignerApplicationForm() {
               ))}
             </dl>
           </fieldset>
+        ) : null}
+
+        {status === "error" ? (
+          <div
+            role="alert"
+            className="mb-6 rounded-md mt-2 border border-danger/40 bg-danger/8 p-4 text-danger"
+          >
+            {statusMessage}
+          </div>
+        ) : null}
+        {status === "submitting" ? (
+          <div
+            role="status"
+            className="mb-6 rounded-md mt-2 border border-gold/45 bg-gold/18 p-4"
+          >
+            {statusMessage}
+          </div>
         ) : null}
 
         <div className="mt-9 flex items-center justify-between gap-4 border-t border-ink/12 pt-6">
