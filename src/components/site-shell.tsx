@@ -4,7 +4,6 @@ import { NavLink } from "./nav-link";
 import { NewsletterForm } from "./newsletter-form";
 
 const navigation = [
-  { href: "/", label: "Home" },
   { href: "/about", label: "Our Story" },
   { href: "/designers", label: "Designers" },
 ] as const;
@@ -114,11 +113,11 @@ export function SiteHeader() {
           >
             <Image
               className="block h-10 w-auto max-[430px]:h-[2.2rem]"
-              src="/nav-mark.png"
+              src="/hero-emblem.png"
               alt="Eighteen Nineteen Twenty"
               width={400}
               height={450}
-              priority
+              // priority
             />
           </Link>
           <nav

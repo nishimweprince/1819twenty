@@ -1,10 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
 import { BrandIcon, type BrandIconName } from "@/components/brand-icons";
-import { HeroGlow } from "@/components/hero-glow";
 import { NewsletterForm } from "@/components/newsletter-form";
 import {
   button,
+  buttonGold,
   ceremonial,
   goldRule,
   scriptAccent,
@@ -18,49 +18,60 @@ const pillars: readonly [BrandIconName, string, string][] = [
   ["leaf", "Transparent Pricing", "No surprise fees — duties included."],
 ];
 
+/* The first six pieces, named as in the comp. Nothing is buyable in Phase 1,
+   so "Coming soon" sits where the price does and the photograph stands in for
+   the piece — decorative, with the caption naming it. */
 const collections = [
-  { name: "Fashion", image: "/photos/fashion-portrait.jpg" },
-  { name: "Home", image: "/photos/indigo-throw.jpg" },
-  { name: "Décor", image: "/photos/interior-decor.jpg" },
-  { name: "Accessories", image: "/photos/beads-bowl.jpg" },
+  { name: "Amani Wrap Dress", image: "/photos/fashion-portrait.jpg" },
+  { name: "Kigali Tote", image: "/photos/category-shoes.jpg" },
+  { name: "Inyambo Pillow", image: "/photos/interior-decor.jpg" },
+  { name: "Karibu Bowl (Set of 2)", image: "/photos/beads-bowl.jpg" },
+  { name: "Imara Throw", image: "/photos/indigo-throw.jpg" },
+  { name: "Urafiki Necklace", image: "/photos/category-accessories.jpg" },
 ] as const;
 
 export default function HomePage() {
   return (
     <>
-      <section className="relative flex min-h-[min(64svh,38rem)] items-center justify-center overflow-hidden py-14 max-[700px]:min-h-136">
+      {/* The lockup and copy sit on the photograph, as in the comp. The
+          photograph runs to near-black in places, so the type is cream over
+          an ink scrim rather than ink over a lightened image — darkening
+          keeps the photo's colour where a paper wash bleached it. */}
+      <section
+        data-ground="ink"
+        className="relative flex min-h-[clamp(26rem,42vw,34rem)] items-center justify-center overflow-hidden py-16"
+      >
         <Image
-          src="/photos/home-hero.jpg"
+          src="/photos/home-hero.png"
           alt=""
           fill
           preload
-          className="object-cover object-center"
+          className="object-cover object-[center_42%]"
           sizes="100vw"
         />
-        <HeroGlow />
+        <div aria-hidden="true" className="absolute inset-0 bg-black/34" />
         <div className="container relative z-1 flex flex-col items-center text-center">
+          {/* The sand recolor of the lockup, the one made to read on ink. */}
           <Image
-            src="/hero-emblem.png"
+            src="/footer-logo.png"
             alt=""
-            width={564}
-            height={535}
+            width={554}
+            height={525}
             loading="eager"
-            className="mb-2 h-auto w-[clamp(8rem,13vw,11rem)]"
+            className="mb-4 h-auto w-[clamp(6rem,9vw,8rem)]"
           />
-          <h1 className="mb-4 max-w-[20ch] text-[clamp(2.4rem,4.6vw,4.2rem)]">
+          <h1 id="site-title" className="mb-4 max-w-[20ch] text-[clamp(2.2rem,4.2vw,3.8rem)] text-paper">
             Eighteen Nineteen Twenty
           </h1>
-          <p className={`${ceremonial} mb-8 max-w-[44ch] leading-[1.8]`}>
+          <p className={`${ceremonial} mb-8 max-w-[44ch] leading-[1.9] text-paper`}>
             Fashion and home rooted in heritage — our story, designed for your style.
           </p>
-          <Link className={button} href="/about">
+          <Link className={buttonGold} href="/about">
             Read our story
           </Link>
         </div>
-        {/* Bottom right is the indigo throw, the one dark region of the photo
-            where paper script reads. */}
         <p
-          className={`${scriptAccent} absolute bottom-8 right-[5vw] z-1 mb-0 max-w-[7ch] text-center text-paper [text-shadow:0_1px_8px_rgba(23,42,58,0.6)] max-[900px]:hidden`}
+          className={`${scriptAccent} absolute top-16 right-[4vw] z-1 mb-0 max-w-[7ch] text-center text-paper max-[900px]:hidden`}
           aria-hidden="true"
         >
           Global Design. Lasting Impact.
@@ -94,8 +105,8 @@ export default function HomePage() {
           </div>
           {/* Each tile is a link to the join form: the pieces are not for sale
               yet, so the click lands where a visitor can ask to be told first.
-              The image is decorative; the caption names the tile. */}
-          <div className="grid grid-cols-4 gap-5 max-[900px]:grid-cols-2 max-[700px]:gap-3">
+              The image is decorative; the caption names the piece. */}
+          <div className="grid grid-cols-6 gap-4 max-[1100px]:grid-cols-3 max-[700px]:grid-cols-2 max-[700px]:gap-3">
             {collections.map((item) => (
               <Link
                 key={item.name}
@@ -103,12 +114,12 @@ export default function HomePage() {
                 href="/#join"
               >
                 <figure className="m-0">
-                  <div className="relative aspect-4/5 overflow-hidden rounded-md">
-                    <Image src={item.image} alt="" fill className={zoomImage} sizes="(max-width: 900px) 50vw, 25vw" />
+                  <div className="relative aspect-square overflow-hidden rounded-md">
+                    <Image src={item.image} alt="" fill className={zoomImage} sizes="(max-width: 700px) 50vw, (max-width: 1100px) 33vw, 17vw" />
                   </div>
                   <figcaption className="pt-3">
-                    <span className="block font-display text-[1.15rem] leading-tight">{item.name}</span>
-                    <span className="mt-1 block text-[0.9rem] text-ink/75">Coming soon</span>
+                    <span className="block font-display text-[1.05rem] leading-tight">{item.name}</span>
+                    <span className="mt-1 block text-[0.85rem] text-ink/75">Coming soon</span>
                   </figcaption>
                 </figure>
               </Link>

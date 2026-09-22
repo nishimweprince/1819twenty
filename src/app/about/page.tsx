@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { BrandIcon, type BrandIconName } from "@/components/brand-icons";
-import { HeroGlow } from "@/components/hero-glow";
 import { Numerals } from "@/components/numerals";
 import { PatternStrip } from "@/components/pattern-strip";
+import { PhotoNote } from "@/components/photo-note";
 import {
   buttonGold,
   ceremonial,
@@ -22,7 +22,11 @@ export const metadata: Metadata = {
 
 const pillars: readonly [BrandIconName, string, string][] = [
   ["globe", "Personally Curated", "Thoughtfully selected by us, for you."],
-  ["diamond", "Directly Authentic", "From independent designers across Africa."],
+  [
+    "diamond",
+    "Directly Authentic",
+    "From independent designers across Africa.",
+  ],
   ["bag", "Transparent Pricing", "No surprise fees — duties included."],
   ["sun", "Rooted in Heritage", "Celebrating culture. Supporting communities."],
 ];
@@ -30,46 +34,61 @@ const pillars: readonly [BrandIconName, string, string][] = [
 const figureFrame = `${zoomFrame} aspect-4/5 rounded-md max-[900px]:aspect-3/2`;
 const caption = `${scriptAccent} mt-4.5 text-ink`;
 
-/* A handwritten phrase over a photo, in paper with the gold rule beneath.
-   Every use is aria-hidden: it repeats copy that is already on the page. */
-function PhotoNote({
-  children,
-  className = "",
-}: {
-  children: React.ReactNode;
-  className?: string;
-}) {
-  return (
-    <div
-      className={`absolute z-1 flex flex-col items-center gap-3 ${className}`}
-      aria-hidden="true"
-    >
-      <p
-        className={`${scriptAccent} mb-0 max-w-[9ch] text-center text-paper [text-shadow:0_1px_8px_rgba(23,42,58,0.6)]`}
-      >
-        {children}
-      </p>
-      <span className={goldRule} />
-    </div>
-  );
-}
-
 export default function AboutPage() {
   return (
     <>
-      <section className="relative flex min-h-[min(72svh,42rem)] items-center justify-center overflow-hidden max-[700px]:min-h-144">
+      {/* Same treatment as the home hero: lockup and copy on the photographs,
+          carried by an ink scrim rather than a paper wash. */}
+      <section
+        data-ground="ink"
+        className="relative flex min-h-[clamp(22rem,34vw,28rem)] items-center justify-center overflow-hidden py-14"
+      >
         {/* Two candidates for the largest paint, so both load eagerly rather
             than either being preloaded. */}
         <div className="absolute inset-0 grid grid-cols-2 max-[700px]:grid-cols-1">
-          <div className="relative"><Image src="/photos/interior-decor.jpg" alt="" fill loading="eager" className="object-cover" sizes="(max-width: 700px) 100vw, 50vw" /></div>
-          <div className="relative max-[700px]:hidden"><Image src="/photos/designer-studio.jpg" alt="" fill loading="eager" className="object-cover object-[center_32%]" sizes="50vw" /></div>
+          <div className="relative">
+            <Image
+              src="/photos/interior-decor.jpg"
+              alt=""
+              fill
+              loading="eager"
+              className="object-cover"
+              sizes="(max-width: 700px) 100vw, 50vw"
+            />
+          </div>
+          <div className="relative max-[700px]:hidden">
+            <Image
+              src="/photos/designer-studio.jpg"
+              alt=""
+              fill
+              loading="eager"
+              className="object-cover object-[center_32%]"
+              sizes="50vw"
+            />
+          </div>
         </div>
-        <HeroGlow />
-        <div className="container relative z-1 flex flex-col items-center py-10 text-center">
-          <Image src="/hero-emblem.png" alt="Eighteen Nineteen Twenty" width={564} height={535} loading="eager" className="h-auto w-[clamp(13rem,26vw,20rem)]" />
-          <p className={`${ceremonial} mt-3 mb-0 max-w-[44ch] leading-[1.8]`}>Fashion and home rooted in heritage — our story, designed for your style.</p>
+        <div aria-hidden="true" className="absolute inset-0 bg-black/34" />
+        <div className="container relative z-1 flex flex-col items-center text-center">
+          <Image
+            src="/footer-logo.png"
+            alt="Eighteen Nineteen Twenty"
+            width={554}
+            height={525}
+            loading="eager"
+            className="h-auto w-[clamp(9rem,15vw,12rem)]"
+          />
+          <span className={`${goldRule} my-6`} aria-hidden="true" />
+          <p
+            id="page-title"
+            className={`${ceremonial} mb-0 max-w-[44ch] leading-[1.9] text-paper`}
+          >
+            Fashion and home rooted in heritage — our story, designed for your
+            style.
+          </p>
         </div>
-        <PhotoNote className="right-6 top-8 max-[900px]:hidden">A more beautiful, more connected world.</PhotoNote>
+        <PhotoNote className="right-6 top-8 max-[900px]:hidden">
+          A more beautiful, more connected world.
+        </PhotoNote>
       </section>
 
       {/* The photo bleeds to the right edge as in the mockup; only the text
@@ -81,8 +100,7 @@ export default function AboutPage() {
             <span className={`${goldRule} mb-6`} aria-hidden="true" />
             <p className={`${ceremonial} mb-6 max-w-[35ch] leading-[1.8]`}>
               A name with meaning.
-              <br />
-              A vision without borders.
+              <br />A vision without borders.
             </p>
             <div className="max-w-[54ch]">
               <p>
@@ -93,12 +111,14 @@ export default function AboutPage() {
                 wardrobes around the world.
               </p>
               <p className="mb-0">
-                We believe in the power of design to connect people, places,
-                and purpose — and we&rsquo;re just getting started.
+                We believe in the power of design to connect people, places, and
+                purpose — and we&rsquo;re just getting started.
               </p>
             </div>
           </div>
-          <div className={`${zoomFrame} min-h-136 max-[760px]:aspect-3/2 max-[760px]:min-h-0`}>
+          <div
+            className={`${zoomFrame} min-h-136 max-[760px]:aspect-3/2 max-[760px]:min-h-0`}
+          >
             <Image
               className={zoomImage}
               src="/photos/indigo-throw.jpg"
@@ -106,8 +126,13 @@ export default function AboutPage() {
               fill
               sizes="(max-width: 760px) 100vw, 60vw"
             />
-            <div aria-hidden="true" className="absolute inset-y-0 right-0 w-1/2 bg-linear-to-l from-ink/45 to-transparent" />
-            <PhotoNote className="right-[clamp(1.5rem,5vw,4rem)] top-1/2 -translate-y-1/2">Timeless Pieces. Meaningful Impact.</PhotoNote>
+            <div
+              aria-hidden="true"
+              className="absolute inset-y-0 right-0 w-1/2 bg-linear-to-l from-ink/78 via-ink/40 to-transparent"
+            />
+            <PhotoNote className="right-[clamp(1.5rem,5vw,4rem)] top-1/2 -translate-y-1/2">
+              Timeless Pieces. Meaningful Impact.
+            </PhotoNote>
           </div>
         </div>
       </section>
@@ -133,9 +158,9 @@ export default function AboutPage() {
               Three birthdays, three people, one family.
               <br />
               These numbers represent our past, our present, and the future we
-              are building together — a reminder that everything we do is
-              rooted in family, guided by purpose, and designed to create a
-              more connected, more beautiful world.
+              are building together — a reminder that everything we do is rooted
+              in family, guided by purpose, and designed to create a more
+              connected, more beautiful world.
             </p>
           </div>
           <div className="flex flex-col items-center text-center">
@@ -246,10 +271,18 @@ export default function AboutPage() {
                 at every breakpoint without per-child border rules. */}
             <div className="grid grid-cols-4 gap-px bg-ink/12 max-[820px]:grid-cols-2 max-[480px]:grid-cols-1">
               {pillars.map(([icon, title, copy], index) => (
-                <article className="flex flex-col items-center bg-paper px-5 py-3 text-center max-[820px]:py-6" key={title}>
-                  <BrandIcon className={`mb-4 size-10 ${index % 2 ? "text-gold" : "text-terracotta"}`} name={icon} />
+                <article
+                  className="flex flex-col items-center bg-paper px-5 py-3 text-center max-[820px]:py-6"
+                  key={title}
+                >
+                  <BrandIcon
+                    className={`mb-4 size-10 ${index % 2 ? "text-gold" : "text-terracotta"}`}
+                    name={icon}
+                  />
                   <h3 className="mb-2 max-w-[9ch] text-[1.35rem]">{title}</h3>
-                  <p className="mb-0 max-w-[20ch] text-[0.95rem] text-ink/75">{copy}</p>
+                  <p className="mb-0 max-w-[20ch] text-[0.95rem] text-ink/75">
+                    {copy}
+                  </p>
                 </article>
               ))}
             </div>
@@ -268,7 +301,10 @@ export default function AboutPage() {
           fill
           sizes="100vw"
         />
-        <div aria-hidden="true" className="absolute inset-0 z-1 bg-linear-to-b from-ink/45 via-ink/78 to-ink/55" />
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 z-1 bg-linear-to-b from-ink/45 via-ink/78 to-ink/55"
+        />
         <div className="container relative z-2">
           <h2 className="mx-auto mb-6 max-w-[22ch] text-paper">
             Fashion and Home Rooted in Heritage — Our Story, Designed for Your
