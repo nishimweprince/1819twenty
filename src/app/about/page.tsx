@@ -7,6 +7,7 @@ import { PatternStrip } from "@/components/pattern-strip";
 import { PhotoNote } from "@/components/photo-note";
 import {
   buttonGold,
+  withArrow,
   ceremonial,
   goldRule,
   scriptAccent,
@@ -31,18 +32,19 @@ const pillars: readonly [BrandIconName, string, string][] = [
   ["sun", "Rooted in Heritage", "Celebrating culture. Supporting communities."],
 ];
 
-const figureFrame = `${zoomFrame} aspect-4/5 rounded-md max-[900px]:aspect-3/2`;
-const caption = `${scriptAccent} mt-4.5 text-ink`;
+// The comp sets the two journey photographs to a common height and lets their
+// widths differ, rather than to a common aspect. Below 900px they stack and an
+// aspect ratio takes over.
+const figureFrame = `${zoomFrame} h-[clamp(11rem,18vw,14.5rem)] rounded-md max-[900px]:aspect-3/2 max-[900px]:h-auto`;
+const caption = `${scriptAccent} mt-3.5 text-ink`;
 
 export default function AboutPage() {
   return (
     <>
-      {/* Same treatment as the home hero: lockup and copy on the photographs,
-          carried by an ink scrim rather than a paper wash. */}
-      <section
-        data-ground="ink"
-        className="relative flex min-h-[clamp(22rem,34vw,28rem)] items-center justify-center overflow-hidden py-14"
-      >
+      {/* The comp lights this hero rather than darkening it: the photographs
+          sit under a paper veil, with a cream pool behind the lockup so the
+          colour emblem and ink copy read. The home hero keeps its ink scrim. */}
+      <section className="relative flex min-h-[clamp(17rem,24vw,22rem)] items-center justify-center overflow-hidden py-10">
         {/* Two candidates for the largest paint, so both load eagerly rather
             than either being preloaded. */}
         <div className="absolute inset-0 grid grid-cols-2 max-[700px]:grid-cols-1">
@@ -67,26 +69,32 @@ export default function AboutPage() {
             />
           </div>
         </div>
-        <div aria-hidden="true" className="absolute inset-0 bg-black/34" />
+        <div aria-hidden="true" className="absolute inset-0 bg-paper/55" />
+        {/* The pool holds paper at full strength across the lockup before it
+            falls away, so the ink copy never lands on the photograph. */}
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 bg-[radial-gradient(44%_86%_at_50%_50%,var(--color-paper)_0%,var(--color-paper)_42%,transparent_100%)]"
+        />
         <div className="container relative z-1 flex flex-col items-center text-center">
           <Image
-            src="/footer-logo.png"
+            src="/hero-emblem.png"
             alt="Eighteen Nineteen Twenty"
-            width={554}
-            height={525}
+            width={564}
+            height={535}
             loading="eager"
             className="h-auto w-[clamp(9rem,15vw,12rem)]"
           />
-          <span className={`${goldRule} my-6`} aria-hidden="true" />
+          <span className={`${goldRule} my-4`} aria-hidden="true" />
           <p
             id="page-title"
-            className={`${ceremonial} mb-0 max-w-[44ch] leading-[1.9] text-paper`}
+            className={`${ceremonial} mb-0 max-w-[44ch] leading-[1.9] text-ink`}
           >
             Fashion and home rooted in heritage — our story, designed for your
             style.
           </p>
         </div>
-        <PhotoNote className="right-6 top-8 max-[900px]:hidden">
+        <PhotoNote className="right-6 top-8 max-[900px]:hidden" tone="ink">
           A more beautiful, more connected world.
         </PhotoNote>
       </section>
@@ -95,9 +103,9 @@ export default function AboutPage() {
           column keeps the page gutter. */}
       <section className="border-t border-ink/12">
         <div className="grid grid-cols-[0.85fr_1.15fr] items-stretch gap-[clamp(2rem,5vw,4.5rem)] pl-[max(1.5rem,calc((100vw-var(--container))/2))] max-[760px]:grid-cols-1 max-[760px]:gap-8 max-[760px]:pl-0">
-          <div className="flex flex-col justify-center py-20 max-[760px]:px-[calc((100vw-var(--container))/2)] max-[760px]:pb-0 max-[760px]:pt-16">
+          <div className="flex flex-col justify-center py-section max-[760px]:px-[calc((100vw-var(--container))/2)] max-[760px]:pb-0 max-[760px]:pt-section">
             <h1 className="mb-3">Our Story</h1>
-            <span className={`${goldRule} mb-6`} aria-hidden="true" />
+            <span className={`${goldRule} mb-3.5`} aria-hidden="true" />
             <p className={`${ceremonial} mb-6 max-w-[35ch] leading-[1.8]`}>
               A name with meaning.
               <br />A vision without borders.
@@ -117,7 +125,7 @@ export default function AboutPage() {
             </div>
           </div>
           <div
-            className={`${zoomFrame} min-h-136 max-[760px]:aspect-3/2 max-[760px]:min-h-0`}
+            className={`${zoomFrame} min-h-[clamp(19rem,26vw,23rem)] max-[760px]:aspect-3/2 max-[760px]:min-h-0`}
           >
             <Image
               className={zoomImage}
@@ -146,12 +154,12 @@ export default function AboutPage() {
         aria-labelledby="why-these-numbers"
       >
         <PatternStrip className="absolute inset-0 opacity-30" />
-        <div className="relative z-1 grid grid-cols-[1fr_1.15fr] items-center gap-[clamp(2rem,5vw,4.5rem)] py-[clamp(4rem,7vw,6rem)] pl-[max(1.5rem,calc((100vw-var(--container))/2))] pr-[clamp(1.5rem,5vw,4.5rem)] max-[820px]:grid-cols-1 max-[820px]:px-[calc((100vw-var(--container))/2)]">
+        <div className="relative z-1 grid grid-cols-[1fr_1.15fr] items-center gap-[clamp(2rem,5vw,4.5rem)] py-band pl-[max(1.5rem,calc((100vw-var(--container))/2))] pr-[clamp(1.5rem,5vw,4.5rem)] max-[820px]:grid-cols-1 max-[820px]:px-[calc((100vw-var(--container))/2)]">
           <div>
-            <h2 id="why-these-numbers" className="mb-4">
+            <h2 id="why-these-numbers" className="mb-3">
               Why These Numbers?
             </h2>
-            <span className={`${goldRule} mb-6`} aria-hidden="true" />
+            <span className={`${goldRule} mb-4`} aria-hidden="true" />
             <p className="mb-0 max-w-[46ch] text-paper/82">
               Eighteen. Nineteen. Twenty.
               <br />
@@ -164,9 +172,9 @@ export default function AboutPage() {
             </p>
           </div>
           <div className="flex flex-col items-center text-center">
-            <Numerals className="text-[clamp(4.2rem,9vw,8.5rem)]" />
-            <span className={`${goldRule} my-6`} aria-hidden="true" />
-            <p className={`${ceremonial} mb-0 text-paper/82`}>
+            <Numerals className="text-[clamp(3.4rem,2.6rem+4.2vw,6.6rem)]" />
+            <span className={`${goldRule} my-3`} aria-hidden="true" />
+            <p className={`${ceremonial} mb-0 leading-[1.65] text-paper/82`}>
               Three birthdays, three people, one family.
             </p>
           </div>
@@ -182,16 +190,13 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <section
-        className="py-24 max-[700px]:py-18"
-        aria-labelledby="our-journey"
-      >
-        <div className="container grid grid-cols-[1.1fr_0.9fr_0.9fr_auto] items-center gap-[clamp(1.5rem,3.5vw,3rem)] max-[1100px]:grid-cols-[1fr_1fr] max-[900px]:grid-cols-1">
+      <section className="py-section" aria-labelledby="our-journey">
+        <div className="container grid grid-cols-[1.5fr_0.85fr_0.95fr_auto] items-center gap-[clamp(1.25rem,3vw,2.5rem)] max-[1100px]:grid-cols-[1fr_1fr] max-[1100px]:gap-y-5 max-[900px]:grid-cols-1">
           <div className="max-[1100px]:col-span-2 max-[900px]:col-span-1">
-            <h2 id="our-journey" className="mb-4.5">
+            <h2 id="our-journey" className="mb-3">
               Our Journey From Us to the Continent
             </h2>
-            <span className={`${goldRule} mb-6`} aria-hidden="true" />
+            <span className={`${goldRule} mb-4`} aria-hidden="true" />
             <div className="max-w-[52ch]">
               <p>
                 Our journey began at home, with a deep appreciation for the
@@ -250,23 +255,23 @@ export default function AboutPage() {
       </section>
 
       <section
-        className="border-t border-ink/12 py-24 max-[700px]:py-18"
+        className="border-t border-ink/12 py-section-sm"
         aria-labelledby="what-we-do"
       >
         <div className="container grid grid-cols-[1fr_3fr] gap-[clamp(2rem,5vw,4.5rem)] max-[900px]:grid-cols-1">
           <div>
-            <h2 id="what-we-do" className="mb-4.5">
+            <h2 id="what-we-do" className="mb-3">
               What We Do
             </h2>
-            <span className={`${goldRule} mb-6`} aria-hidden="true" />
+            <span className={`${goldRule} mb-4`} aria-hidden="true" />
             <p className="mb-0 max-w-[32ch]">
               We curate fashion and home from independent African designers and
               make it easy for you to shop with confidence.
             </p>
           </div>
-          <div className="border-l border-ink/12 pl-[clamp(2rem,5vw,4.5rem)] max-[900px]:border-l-0 max-[900px]:border-t max-[900px]:pl-0 max-[900px]:pt-12">
+          <div className="border-l border-ink/12 pl-[clamp(2rem,5vw,4.5rem)] max-[900px]:border-l-0 max-[900px]:border-t max-[900px]:pl-0 max-[900px]:pt-section-sm">
             <h2 className="mb-3">Our Promise</h2>
-            <span className={`${goldRule} mb-9`} aria-hidden="true" />
+            <span className={`${goldRule} mb-6`} aria-hidden="true" />
             {/* gap-px over an ink wash draws the rules, so the grid stays correct
                 at every breakpoint without per-child border rules. */}
             <div className="grid grid-cols-4 gap-px bg-ink/12 max-[820px]:grid-cols-2 max-[480px]:grid-cols-1">
@@ -279,7 +284,7 @@ export default function AboutPage() {
                     className={`mb-4 size-10 ${index % 2 ? "text-gold" : "text-terracotta"}`}
                     name={icon}
                   />
-                  <h3 className="mb-2 max-w-[9ch] text-[1.35rem]">{title}</h3>
+                  <h3 className="mb-2 max-w-[9ch] text-[1.25rem]">{title}</h3>
                   <p className="mb-0 max-w-[20ch] text-[0.95rem] text-ink/75">
                     {copy}
                   </p>
@@ -292,7 +297,7 @@ export default function AboutPage() {
 
       <section
         data-ground="ink"
-        className="relative flex min-h-[min(52svh,30rem)] items-center justify-center overflow-hidden text-center"
+        className="relative flex min-h-[min(28svh,15rem)] items-center justify-center overflow-hidden py-section-sm text-center"
       >
         <Image
           className="object-cover object-[center_35%]"
@@ -310,7 +315,7 @@ export default function AboutPage() {
             Fashion and Home Rooted in Heritage — Our Story, Designed for Your
             Style.
           </h2>
-          <Link className={buttonGold} href="/designers">
+          <Link className={`${buttonGold} ${withArrow}`} href="/designers">
             Meet the designers
           </Link>
         </div>

@@ -32,10 +32,11 @@ export const metadata: Metadata = {
     template: "%s | Eighteen Nineteen Twenty",
   },
   description:
-    "Fashion and home rooted in heritage, curated directly from independent African designers.",
+    "Truly original fashion and home, curated from Africa's most compelling designers. Launching soon — sign up to hear first.",
   openGraph: {
     title: "Eighteen Nineteen Twenty",
-    description: "Timeless roots. Modern living.",
+    description:
+      "Launching soon. Truly original fashion and home, curated from Africa's most compelling designers.",
     url: siteUrl,
     siteName: "Eighteen Nineteen Twenty",
     images: [{ url: "/1000171216.png", width: 1200, height: 628 }],

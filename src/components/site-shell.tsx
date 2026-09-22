@@ -1,9 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
+import { ceremonial, goldRule } from "@/lib/styles";
 import { NavLink } from "./nav-link";
-import { NewsletterForm } from "./newsletter-form";
 
 const navigation = [
+  { href: "/", label: "Home" },
   { href: "/about", label: "Our Story" },
   { href: "/designers", label: "Designers" },
 ] as const;
@@ -97,82 +98,102 @@ const iconPaths: Record<string, React.ReactNode> = {
 
 export function SiteHeader() {
   return (
-    <>
-      <div
-        data-ground="ink"
-        className="bg-ink px-4 py-[0.42rem] text-center text-[0.72rem] tracking-[0.03em] text-paper"
-      >
-        People. Places. Pieces. Purpose.
-      </div>
-      <header className="sticky top-0 z-40 border-b border-ink/12 bg-paper/88 backdrop-blur-md">
-        <div className="container grid min-h-[4.5rem] grid-cols-[1fr_auto_1fr] items-center max-[820px]:grid-cols-[1fr_auto] max-[430px]:min-h-16 max-[430px]:gap-x-3">
+    <header className="sticky top-0 z-40 border-b border-ink/12 bg-paper/88 backdrop-blur-md">
+      <div className="container flex min-h-14 items-center gap-8 max-[430px]:gap-x-3">
+        <Link
+          className="inline-flex flex-none items-center no-underline"
+          href="/"
+          aria-label="Eighteen Nineteen Twenty home"
+        >
+          <Image
+            className="block h-9 w-auto max-[430px]:h-8"
+            src="/hero-emblem.png"
+            alt="Eighteen Nineteen Twenty"
+            width={564}
+            height={535}
+            // priority
+          />
+        </Link>
+        <nav
+          className="flex gap-7 max-[820px]:hidden"
+          aria-label="Primary navigation"
+        >
+          {navigation.map((item) => (
+            <NavLink href={item.href} key={item.href}>
+              {item.label}
+            </NavLink>
+          ))}
+        </nav>
+        <div className="ml-auto flex items-center gap-7 max-[820px]:hidden">
           <Link
-            className="inline-flex items-center justify-self-start no-underline"
-            href="/"
-            aria-label="Eighteen Nineteen Twenty home"
-          >
-            <Image
-              className="block h-10 w-auto max-[430px]:h-[2.2rem]"
-              src="/hero-emblem.png"
-              alt="Eighteen Nineteen Twenty"
-              width={400}
-              height={450}
-              // priority
-            />
-          </Link>
-          <nav
-            className="flex gap-7 max-[820px]:hidden"
-            aria-label="Primary navigation"
-          >
-            {navigation.map((item) => (
-              <NavLink href={item.href} key={item.href}>
-                {item.label}
-              </NavLink>
-            ))}
-          </nav>
-          <Link
-            className="justify-self-end text-[0.85rem] font-semibold no-underline underline-offset-4 hover:underline max-[820px]:hidden"
+            className="text-[0.85rem] font-semibold no-underline underline-offset-4 hover:underline"
             href="/#join"
           >
             Join our community
           </Link>
-          <details className="relative justify-self-end min-[821px]:hidden">
-            <summary className="cursor-pointer list-none font-semibold max-[430px]:text-[0.9rem] [&::-webkit-details-marker]:hidden">
-              Menu
-            </summary>
-            <nav
-              className="absolute right-0 top-10 grid min-w-48 rounded-md border border-ink/34 bg-paper-hi p-4 shadow-[0_12px_30px_-18px_rgba(44,62,80,0.35)]"
-              aria-label="Mobile navigation"
-            >
-              {navigation.map((item) => (
-                <Link
-                  className="rounded-sm p-2.5 no-underline hover:bg-ink/8"
-                  href={item.href}
-                  key={item.href}
-                >
-                  {item.label}
-                </Link>
-              ))}
+          <p
+            className={`${ceremonial} m-0 border-l border-ink/20 pl-7 text-ink/75 max-[1000px]:hidden`}
+          >
+            People. Places. Pieces. Purpose.
+          </p>
+        </div>
+        <details className="relative ml-auto min-[821px]:hidden">
+          <summary className="cursor-pointer list-none font-semibold max-[430px]:text-[0.9rem] [&::-webkit-details-marker]:hidden">
+            Menu
+          </summary>
+          <nav
+            className="absolute right-0 top-10 grid min-w-48 rounded-md border border-ink/34 bg-paper-hi p-4 shadow-[0_12px_30px_-18px_rgba(44,62,80,0.35)]"
+            aria-label="Mobile navigation"
+          >
+            {navigation.map((item) => (
               <Link
                 className="rounded-sm p-2.5 no-underline hover:bg-ink/8"
-                href="/#join"
+                href={item.href}
+                key={item.href}
               >
-                Join our community
+                {item.label}
               </Link>
-            </nav>
-          </details>
-        </div>
-      </header>
-    </>
+            ))}
+            <Link
+              className="rounded-sm p-2.5 no-underline hover:bg-ink/8"
+              href="/#join"
+            >
+              Join our community
+            </Link>
+          </nav>
+        </details>
+      </div>
+    </header>
   );
 }
 
-export function SocialLinks() {
+/**
+ * `tone` follows the same idiom as PhotoNote: paper on an ink ground, ink on
+ * paper. `size` is the glyph size — the landing hero sets these larger than
+ * the footer does.
+ */
+export function SocialLinks({
+  tone = "paper",
+  size = 21,
+  className = "",
+}: {
+  tone?: "paper" | "ink";
+  size?: number;
+  className?: string;
+}) {
   return (
-    <div className="mt-4 flex flex-wrap gap-2.5" aria-label="Social media">
+    <div
+      className={`flex flex-none gap-0.5 max-[620px]:flex-wrap ${className}`}
+      aria-label="Social media"
+    >
       {socials.map((social) => (
         <a
-          className="inline-flex size-10 items-center justify-center rounded-full border border-paper/45 text-paper no-underline transition-colors duration-150 hover:border-paper hover:bg-paper/12"
+          className={`inline-flex items-center justify-center rounded-sm no-underline transition-colors duration-150 ${
+            tone === "ink"
+              ? "text-ink/85 hover:text-ink"
+              : "text-paper/85 hover:text-paper"
+          }`}
+          style={{ width: size * 1.7, height: size * 1.7 }}
           href={social.href}
           key={social.label}
           aria-label={social.label}
@@ -181,8 +202,8 @@ export function SocialLinks() {
         >
           <svg
             viewBox="0 0 24 24"
-            width="18"
-            height="18"
+            width={size}
+            height={size}
             aria-hidden="true"
             focusable="false"
           >
@@ -196,77 +217,69 @@ export function SocialLinks() {
 
 export function SiteFooter() {
   return (
-    <footer
-      data-ground="ink"
-      className="bg-ink pb-6 pt-18 text-paper max-[700px]:pt-14"
-    >
-      <div className="container">
-        <div className="grid grid-cols-[1fr_1.1fr_auto] items-start gap-9 pb-9 max-[900px]:grid-cols-1 max-[900px]:gap-12">
+    <>
+      {/* The sign-up moved to its own band on the landing page, so the footer
+          is just the mark, the channels and the motto. A shade deeper than the
+          band above it, as in the comp. */}
+      <footer
+        data-ground="ink"
+        className="bg-ink-deep py-section-sm text-paper"
+      >
+        <div className="container grid grid-cols-[1fr_auto_1fr] items-center gap-x-9 gap-y-8 max-[820px]:grid-cols-1 max-[820px]:justify-items-center max-[820px]:text-center">
           <div className="flex items-center gap-4">
             <Image
-              className="h-18 w-auto"
-              src="/footer-logo.png"
+              className="h-14 w-auto flex-none"
+              src="/footer-emblem.png"
               alt=""
-              width={554}
-              height={525}
+              width={564}
+              height={535}
             />
             <div>
-              <div className="font-display text-[1.35rem] leading-tight">
+              <div className="font-display text-[1.2rem] leading-tight whitespace-nowrap">
                 Eighteen Nineteen Twenty
               </div>
-              <p className="mb-0 mt-1.5 max-w-72 text-[0.85rem] text-paper/66">
-                Fashion and home rooted in heritage.
+              <p className={`${ceremonial} mb-0 mt-1.5 text-paper/66`}>
+                Truly original fashion and home
               </p>
             </div>
           </div>
 
-          <div className="border-x border-paper/16 px-9 max-[900px]:border-x-0 max-[900px]:px-0">
-            <h2 className="mb-3.5 font-display text-[1.2rem]">
-              Join our community
-            </h2>
-            <NewsletterForm variant="footer" />
+          <div className="border-x border-paper/16 px-9 max-[820px]:border-x-0 max-[820px]:px-0">
             <SocialLinks />
           </div>
 
-          <p className="m-0 grid justify-items-end gap-0.5 text-right font-display text-[1.15rem] leading-tight text-paper/82 max-[900px]:justify-items-start max-[900px]:text-left">
-            <span>Timeless roots</span>
-            <span>Modern living</span>
+          <p
+            className={`${ceremonial} m-0 grid justify-items-end gap-1.5 justify-self-end text-right text-paper/82 max-[820px]:justify-items-center max-[820px]:justify-self-center max-[820px]:text-center`}
+          >
+            <span>People</span>
+            <span>Places</span>
+            <span>Pieces</span>
+            <span>Purpose</span>
+            <span className={`${goldRule} mt-1`} aria-hidden="true" />
           </p>
         </div>
+      </footer>
 
-        <div className="flex justify-between gap-6 border-t border-paper/20 pt-4.5 text-[0.8rem] text-paper/66 max-[820px]:flex-col max-[820px]:items-start max-[820px]:gap-2">
-          <nav className="flex flex-wrap gap-5" aria-label="Footer navigation">
-            <Link
-              className="text-paper/80 no-underline hover:text-paper hover:underline"
-              href="/about"
-            >
-              Our Story
-            </Link>
-            <Link
-              className="text-paper/80 no-underline hover:text-paper hover:underline"
-              href="/designers"
-            >
-              Designers
-            </Link>
-            <Link
-              className="text-paper/80 no-underline hover:text-paper hover:underline"
-              href="/privacy"
-            >
+      {/* The page signs off on paper. The comp carries no links here, but the
+          privacy notice and terms need a route in from every page, so they sit
+          beside the copyright rather than only inside a form. */}
+      <div className="bg-paper">
+        <div className="container flex min-h-14 items-center justify-between gap-6 py-3 text-[0.8rem] text-ink/75 max-[700px]:flex-col max-[700px]:items-start max-[700px]:gap-3">
+          <p className={`${ceremonial} m-0`}>Timeless roots. Modern living.</p>
+          <div className="flex items-center gap-5 max-[700px]:flex-wrap">
+            <Link className="no-underline hover:underline" href="/privacy">
               Privacy
             </Link>
-            <Link
-              className="text-paper/80 no-underline hover:text-paper hover:underline"
-              href="/terms"
-            >
+            <Link className="no-underline hover:underline" href="/terms">
               Terms
             </Link>
-          </nav>
-          <span>
-            © {new Date().getFullYear()} Eighteen Nineteen Twenty. All rights
-            reserved.
-          </span>
+            <span className="border-l border-ink/20 pl-5 max-[700px]:border-l-0 max-[700px]:pl-0">
+              © {new Date().getFullYear()} Eighteen Nineteen Twenty. All rights
+              reserved.
+            </span>
+          </div>
         </div>
       </div>
-    </footer>
+    </>
   );
 }

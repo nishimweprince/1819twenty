@@ -4,9 +4,23 @@
  * is set by the parent — terracotta on paper, paper on a terracotta disc.
  */
 export type BrandIconName =
-  "globe" | "diamond" | "bag" | "sun" | "people" | "leaf";
+  "globe" | "diamond" | "bag" | "sun" | "people" | "leaf" | "star" | "house";
 
 const paths: Record<BrandIconName, React.ReactNode> = {
+  star: (
+    <path
+      d="M12 2.6l2.9 5.9 6.5.9-4.7 4.6 1.1 6.4-5.8-3-5.8 3 1.1-6.4L2.6 9.4l6.5-.9z"
+      fill="currentColor"
+      stroke="none"
+    />
+  ),
+  house: (
+    <>
+      <path d="M3 11.2 12 3.5l9 7.7" />
+      <path d="M5.5 9.8V20.5h13V9.8" />
+      <path d="M9.8 20.5v-5.6h4.4v5.6" />
+    </>
+  ),
   globe: (
     <>
       <circle cx="12" cy="12" r="9" />

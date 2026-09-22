@@ -12,8 +12,25 @@
 
 const controlBase =
   "inline-flex min-h-[2.9rem] cursor-pointer items-center justify-center gap-2 rounded-md " +
-  "px-5 py-2.5 text-[0.85rem] font-semibold tracking-[0.01em] no-underline " +
+  "px-6 py-2.5 text-[0.78rem] font-semibold uppercase tracking-[0.16em] no-underline " +
   "transition-colors duration-150 disabled:cursor-not-allowed disabled:opacity-55";
+
+/**
+ * Links that act: the comps close every one with an arrow. The glyph is drawn
+ * by `.with-arrow::after` in globals.css rather than a Tailwind arbitrary
+ * `content-[...]`, whose escaping for a non-ASCII codepoint is brittle.
+ */
+export const withArrow = "with-arrow";
+
+/**
+ * "Launching soon" — a status badge, not a control. It carries buttonGold's
+ * look without the pointer, hover or interactive target, because pressing it
+ * does nothing, and a control that announces itself and then does nothing is
+ * worse than plain text.
+ */
+export const badgeGold =
+  "inline-flex items-center justify-center rounded-md border border-gold bg-gold " +
+  "px-6 py-3 text-[0.78rem] font-semibold uppercase tracking-[0.16em] text-ink";
 
 /** Primary action on a paper ground. */
 export const button = `${controlBase} border border-ink bg-ink text-paper hover:border-ink-deep hover:bg-ink-deep`;
@@ -56,13 +73,20 @@ export const scriptAccent =
   "font-script text-[clamp(2rem,3vw,2.75rem)] leading-[1.1] tracking-[0.01em]";
 
 export const scriptFeature =
-  "font-script text-[clamp(2.6rem,4.2vw,3.6rem)] leading-[1.1]";
+  "font-script text-[clamp(1.3rem,1rem+1.1vw,1.95rem)] leading-[1.2]";
 
 /**
  * The one tracked-caps style on the site, reserved for text that imitates an
  * object (book spines) or the single ceremonial line under the numerals.
  */
 export const ceremonial = "text-[0.72rem] uppercase tracking-[0.24em]";
+
+/**
+ * The same tracked caps one step up, for a label that carries a section rather
+ * than annotating one — the promise pillars and the category tiles.
+ */
+export const ceremonialLg =
+  "text-[clamp(0.85rem,0.78rem+0.2vw,1rem)] uppercase tracking-[0.18em]";
 
 /** Short gold rule that punctuates a heading or a phrase. */
 export const goldRule = "block h-0.5 w-12 bg-gold";
