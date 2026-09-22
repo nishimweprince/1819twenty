@@ -158,9 +158,20 @@ export async function listPhotoUploads(applicationId: string) {
 }
 
 export async function verifyUploads(applicationId: string, paths: string[]) {
-  if (paths.length < 3 || paths.length > 5 || new Set(paths).size !== paths.length)
+  if (
+    paths.length < 3 ||
+    paths.length > 5 ||
+    new Set(paths).size !== paths.length
+  )
     return false;
-  if (paths.some((path) => !path.startsWith(`${applicationId}/`) || path.includes("..") || path.slice(applicationId.length + 1).includes("/")))
+  if (
+    paths.some(
+      (path) =>
+        !path.startsWith(`${applicationId}/`) ||
+        path.includes("..") ||
+        path.slice(applicationId.length + 1).includes("/"),
+    )
+  )
     return false;
   const files = await listPhotoUploads(applicationId);
   const names = new Set(files.map((file) => file.name));
@@ -207,9 +218,7 @@ export async function createPhotoReadUrl(
     .from("designer-lookbooks")
     .createSignedUrl(path, expiresInSeconds);
   if (error || !data)
-    throw new Error(
-      error?.message ?? "Could not create a secure photo link.",
-    );
+    throw new Error(error?.message ?? "Could not create a secure photo link.");
   return data.signedUrl;
 }
 

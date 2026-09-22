@@ -15,12 +15,9 @@ export async function POST(
   const body = await readJson(request);
   const parsed = uploadRequestSchema.safeParse(body);
   if (!parsed.success)
-    return failure(
-      "VALIDATION_ERROR",
-      "Check the selected photo.",
-      422,
-      { fieldErrors: zodFieldErrors(parsed.error) },
-    );
+    return failure("VALIDATION_ERROR", "Check the selected photo.", 422, {
+      fieldErrors: zodFieldErrors(parsed.error),
+    });
   if (!verifyDraftToken(parsed.data.draftToken, id))
     return failure(
       "INVALID_DRAFT",
@@ -38,7 +35,11 @@ export async function POST(
       );
     const files = await listPhotoUploads(id);
     if (files.length >= 5)
-      return failure("PHOTO_LIMIT", "This application already has five uploaded photos.", 409);
+      return failure(
+        "PHOTO_LIMIT",
+        "This application already has five uploaded photos.",
+        409,
+      );
     const upload = await createPhotoUpload(id, parsed.data.fileName);
     return success({
       path: upload.path,

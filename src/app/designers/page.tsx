@@ -5,7 +5,15 @@ import { BrandIcon, type BrandIconName } from "@/components/brand-icons";
 import { Numerals } from "@/components/numerals";
 import { PatternStrip } from "@/components/pattern-strip";
 import { PhotoNote } from "@/components/photo-note";
-import { buttonGold, ceremonial, goldRule, scriptAccent, scriptFeature, zoomFrame, zoomImage } from "@/lib/styles";
+import {
+  buttonGold,
+  ceremonial,
+  goldRule,
+  scriptAccent,
+  scriptFeature,
+  zoomFrame,
+  zoomImage,
+} from "@/lib/styles";
 
 export const metadata: Metadata = {
   title: "For Designers",
@@ -86,8 +94,7 @@ export default function DesignersPage() {
             <span className={`${goldRule} mb-7`} aria-hidden="true" />
             <p className="mb-8 max-w-[42ch] text-[1.05rem] text-ink/75">
               A global platform for African designers, makers, and artisans to
-              share their creativity, culture, and craftsmanship with the
-              world.
+              share their creativity, culture, and craftsmanship with the world.
             </p>
             <Link className={buttonGold} href="/designers/apply">
               Apply to join
@@ -97,7 +104,9 @@ export default function DesignersPage() {
             </p>
           </div>
         </div>
-        <figure className={`${zoomFrame} m-0 max-[900px]:order-first max-[900px]:aspect-4/3`}>
+        <figure
+          className={`${zoomFrame} m-0 max-[900px]:order-first max-[900px]:aspect-4/3`}
+        >
           <Image
             className={zoomImage}
             src="/photos/designer-studio.jpg"
@@ -233,7 +242,9 @@ export default function DesignersPage() {
                     <BrandIcon className="size-6" name={icon} />
                   </span>
                   <h3 className="mb-2 text-[1.15rem]">{title}</h3>
-                  <p className="mb-0 text-[0.88rem] leading-relaxed text-ink/75">{copy}</p>
+                  <p className="mb-0 text-[0.88rem] leading-relaxed text-ink/75">
+                    {copy}
+                  </p>
                 </article>
               ))}
             </div>
@@ -258,7 +269,10 @@ export default function DesignersPage() {
           fill
           sizes="100vw"
         />
-        <div aria-hidden="true" className="absolute inset-0 z-1 bg-linear-to-b from-ink/45 via-ink/78 to-ink/55" />
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 z-1 bg-linear-to-b from-ink/45 via-ink/78 to-ink/55"
+        />
         <div className="container relative z-2">
           <h2 className="mx-auto mb-6 max-w-[18ch] text-paper">
             Join Our Community of Visionary Designers

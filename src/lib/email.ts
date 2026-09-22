@@ -17,8 +17,12 @@ import {
 } from "./validation";
 
 function escapeHtml(value: string) {
-  return value.replace(/[&<>'"]/g, (char) =>
-    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" })[char]!,
+  return value.replace(
+    /[&<>'"]/g,
+    (char) =>
+      ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" })[
+        char
+      ]!,
   );
 }
 
@@ -31,10 +35,12 @@ function row(label: string, value: string | null | undefined) {
 }
 
 function named(value: string | null, labels: Record<string, string>) {
-  return value ? labels[value] ?? value : null;
+  return value ? (labels[value] ?? value) : null;
 }
 
-export async function sendApplicationEmails(application: DesignerApplicationRecord) {
+export async function sendApplicationEmails(
+  application: DesignerApplicationRecord,
+) {
   if (!env.RESEND_API_KEY) {
     await updateEmailDelivery(application.id, {
       receipt_email_status: "not_configured",
@@ -79,22 +85,50 @@ export async function sendApplicationEmails(application: DesignerApplicationReco
     row("5. Country/city", application.country_city),
     row("6. Instagram/social handles", application.website_social),
     row("7. Website", application.website_url),
-    row("8. Categories", application.categories.map((value) => categoryLabels[value as keyof typeof categoryLabels] ?? value).join(", ")),
+    row(
+      "8. Categories",
+      application.categories
+        .map(
+          (value) =>
+            categoryLabels[value as keyof typeof categoryLabels] ?? value,
+        )
+        .join(", "),
+    ),
     row("9. Brand and design story", application.brand_story),
-    row("10. Time in business", named(application.years_in_business, businessAgeLabels)),
+    row(
+      "10. Time in business",
+      named(application.years_in_business, businessAgeLabels),
+    ),
     row("11. Made by", named(application.made_by, makerLabels)),
     row("11. Made where", application.made_where),
     row("12. Sells online", application.sells_online ? "Yes" : "No"),
     row("12. Online channels", application.online_channels),
-    row("13. Monthly production capacity", named(application.monthly_capacity, capacityLabels)),
-    row("14. Wholesale/export experience", application.has_wholesale_export_experience ? "Yes" : "No"),
-    row("15. International shipping", named(application.shipping_capability, shippingLabels)),
+    row(
+      "13. Monthly production capacity",
+      named(application.monthly_capacity, capacityLabels),
+    ),
+    row(
+      "14. Wholesale/export experience",
+      application.has_wholesale_export_experience ? "Yes" : "No",
+    ),
+    row(
+      "15. International shipping",
+      named(application.shipping_capability, shippingLabels),
+    ),
     row("16. Photos", `${application.upload_paths.length} uploaded`),
     row("17. Lookbook/catalog URL", application.lookbook_url),
     row("18. Why join", application.why_join),
-    row("19. Goals", application.goals.map((value) => goalLabels[value as keyof typeof goalLabels] ?? value).join(", ")),
+    row(
+      "19. Goals",
+      application.goals
+        .map((value) => goalLabels[value as keyof typeof goalLabels] ?? value)
+        .join(", "),
+    ),
     row("20. Additional notes", application.additional_notes),
-    row("21. 2027 event interest", named(application.event_interest, eventInterestLabels)),
+    row(
+      "21. 2027 event interest",
+      named(application.event_interest, eventInterestLabels),
+    ),
     row("Privacy consent", application.privacy_consent_at),
     row("Marketing updates", application.marketing_consent ? "Yes" : "No"),
   ].join("");

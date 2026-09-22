@@ -8,11 +8,7 @@ import { useId } from "react";
  * 820px it becomes a short horizontal rule so the band keeps its frame
  * without spending vertical space.
  */
-export function PatternStrip({
-  className = "",
-}: {
-  className?: string;
-}) {
+export function PatternStrip({ className = "" }: { className?: string }) {
   // Two strips can frame one band, so the pattern id must not collide.
   const id = `mudcloth-${useId().replace(/:/g, "")}`;
   return (
@@ -23,12 +19,7 @@ export function PatternStrip({
       preserveAspectRatio="xMidYMid slice"
     >
       <defs>
-        <pattern
-          id={id}
-          width="56"
-          height="56"
-          patternUnits="userSpaceOnUse"
-        >
+        <pattern id={id} width="56" height="56" patternUnits="userSpaceOnUse">
           <g
             fill="none"
             stroke="var(--color-paper)"

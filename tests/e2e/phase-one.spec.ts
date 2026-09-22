@@ -44,7 +44,9 @@ test("designer form keeps the visitor on the first step when required fields are
   await page.goto("/designers/apply");
   await page.getByRole("button", { name: "Continue" }).click();
   await expect(page.getByText("Enter your full name.")).toBeVisible();
-  await expect(page.getByRole("group", { name: "Contact & brand" })).toBeVisible();
+  await expect(
+    page.getByRole("group", { name: "Contact & brand" }),
+  ).toBeVisible();
 });
 
 test("commerce routes are not part of Phase 1", async ({ page }) => {

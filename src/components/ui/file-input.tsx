@@ -17,7 +17,15 @@ type FileInputProps = Omit<InputHTMLAttributes<HTMLInputElement>, "type"> & {
  */
 export const FileInput = forwardRef<HTMLInputElement, FileInputProps>(
   function FileInput(
-    { className, label = "Choose files", hint, onDragOver, onDragLeave, onDrop, ...props },
+    {
+      className,
+      label = "Choose files",
+      hint,
+      onDragOver,
+      onDragLeave,
+      onDrop,
+      ...props
+    },
     ref,
   ) {
     const [dragging, setDragging] = useState(false);
@@ -27,7 +35,9 @@ export const FileInput = forwardRef<HTMLInputElement, FileInputProps>(
           "file-root relative grid min-h-24 w-full place-items-center rounded-md border border-dashed " +
           "bg-paper px-5 py-6 text-center transition-colors duration-150 " +
           "has-[input[aria-invalid=true]]:border-danger " +
-          (dragging ? "border-ink bg-paper-hi" : "border-ink/34 hover:border-ink/55") +
+          (dragging
+            ? "border-ink bg-paper-hi"
+            : "border-ink/34 hover:border-ink/55") +
           (className ? ` ${className}` : "")
         }
       >

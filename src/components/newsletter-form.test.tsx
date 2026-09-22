@@ -24,9 +24,7 @@ describe("NewsletterForm error display", () => {
       target: { value: "test@example.com" },
     });
     fireEvent.click(screen.getByRole("checkbox"));
-    fireEvent.click(
-      screen.getByRole("button", { name: "Join our community" }),
-    );
+    fireEvent.click(screen.getByRole("button", { name: "Join our community" }));
     const status = await screen.findByText(
       "Too many attempts. Try again tomorrow.",
     );
@@ -46,9 +44,7 @@ describe("NewsletterForm error display", () => {
       target: { value: "test@example.com" },
     });
     fireEvent.click(screen.getByRole("checkbox"));
-    fireEvent.click(
-      screen.getByRole("button", { name: "Join our community" }),
-    );
+    fireEvent.click(screen.getByRole("button", { name: "Join our community" }));
     const status = await screen.findByText(
       "Check your inbox to confirm your subscription.",
     );
@@ -57,9 +53,7 @@ describe("NewsletterForm error display", () => {
 
   it("footer: shows validation errors in red", async () => {
     render(<NewsletterForm variant="footer" />);
-    fireEvent.click(
-      screen.getByRole("button", { name: "Join our community" }),
-    );
+    fireEvent.click(screen.getByRole("button", { name: "Join our community" }));
     const status = await screen.findByText("Enter a valid email address.");
     const paragraph = status.closest("p");
     expect(paragraph).not.toHaveClass("text-paper/82");
