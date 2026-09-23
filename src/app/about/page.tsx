@@ -318,7 +318,7 @@ export default function AboutPage() {
             Style.
           </h2>
           <Link className={`${buttonGold} ${withArrow}`} href="/designers">
-            Meet the designers
+            Join as a designer
           </Link>
         </div>
         <p
