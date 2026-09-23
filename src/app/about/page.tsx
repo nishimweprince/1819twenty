@@ -28,7 +28,7 @@ const pillars: readonly [BrandIconName, string, string][] = [
     "Directly Authentic",
     "From independent designers across Africa.",
   ],
-  ["bag", "Transparent Pricing", "No surprise fees — duties included."],
+  ["bag", "Transparent Pricing", "No surprise fees at checkout."],
   ["sun", "Rooted in Heritage", "Celebrating culture. Supporting communities."],
 ];
 
