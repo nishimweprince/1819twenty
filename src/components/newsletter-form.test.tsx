@@ -46,7 +46,7 @@ describe("NewsletterForm error display", () => {
     fireEvent.click(screen.getByRole("checkbox"));
     fireEvent.click(screen.getByRole("button", { name: "Join our community" }));
     const status = await screen.findByText(
-      "Check your inbox to confirm your subscription.",
+      "You're on the list. Thank you for joining.",
     );
     expect(status.closest("p")).not.toHaveClass("text-danger");
   });

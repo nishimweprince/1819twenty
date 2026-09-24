@@ -54,6 +54,21 @@ describe("designerApplicationSchema", () => {
       true,
     );
   });
+  it("requires a dialable phone number with its country code", () => {
+    for (const phoneWhatsapp of ["", "555", "0788123456", "+250 12"])
+      expect(
+        designerApplicationSchema.safeParse({
+          ...validApplication,
+          phoneWhatsapp,
+        }).success,
+      ).toBe(false);
+    expect(
+      designerApplicationSchema.safeParse({
+        ...validApplication,
+        phoneWhatsapp: "+2348031234567",
+      }).success,
+    ).toBe(true);
+  });
   it("requires a category and a goal", () => {
     expect(
       designerApplicationSchema.safeParse({

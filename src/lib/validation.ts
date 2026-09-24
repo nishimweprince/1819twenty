@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { isPhoneValid } from "./phone";
 
 export const applicationCategories = [
   "apparel",
@@ -119,7 +120,15 @@ export const designerApplicationBaseSchema = z.object({
     .min(2, "Enter your brand or business name.")
     .max(120),
   email: z.email("Enter a valid email address.").max(254),
-  phoneWhatsapp: z.string().trim().min(5, "Enter a phone number.").max(80),
+  phoneWhatsapp: z
+    .string()
+    .trim()
+    .min(1, "Enter a phone number.")
+    .max(40)
+    .refine(
+      isPhoneValid,
+      "Enter a valid phone number, including the country code.",
+    ),
   countryCity: z
     .string()
     .trim()

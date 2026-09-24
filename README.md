@@ -24,11 +24,11 @@ npm run test:e2e
 
 ## Supabase
 
-Apply `supabase/migrations/001_phase_one.sql`, then `supabase/migrations/002_application_questions.sql`, in the Supabase SQL editor before deploying the updated designer form. The migrations create the private application table and photo bucket, rate limiter, and draft-cleanup function. Keep the service-role key server-side.
+Apply `supabase/migrations/001_phase_one.sql`, then `supabase/migrations/002_application_questions.sql`, then `supabase/migrations/003_newsletter_subscribers.sql`, in the Supabase SQL editor before deploying the updated designer form. The migrations create the private application table and photo bucket, rate limiter, draft-cleanup function, and newsletter subscriber table. Keep the service-role key server-side.
 
 ## Provider setup
 
-- Configure a double-opt-in Klaviyo list and set its ID.
+- Newsletter signups are stored in Supabase (`newsletter_subscribers`). The Klaviyo integration in `src/lib/klaviyo.ts` is set aside; to re-enable it, configure a double-opt-in list and call it from `/api/newsletter/subscribe`.
 - Verify `1819twenty.com` in Resend and register `/api/webhooks/resend`.
 - Create Cloudflare Turnstile keys for production.
 - Add Shopify Storefront credentials when the store is available; Phase 1 does not call Shopify at render time.

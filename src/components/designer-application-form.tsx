@@ -35,9 +35,11 @@ import {
   eventInterestOptions,
   eventInterestLabels,
 } from "@/lib/validation";
+import { formatPhone } from "@/lib/phone";
 import { isStorageConfigured, simulatedReference } from "@/lib/submission";
 import { Checkbox } from "./ui/checkbox";
 import { FileInput } from "./ui/file-input";
+import { PhoneInput } from "./ui/phone-input";
 import { Radio } from "./ui/radio";
 import { Select } from "./ui/select";
 import { Turnstile } from "./turnstile";
@@ -201,6 +203,51 @@ function SelectField({
           />
         )}
       />
+      {error?.message ? <ErrorText>{error.message}</ErrorText> : null}
+    </div>
+  );
+}
+
+// The phone control is a country combobox plus a number input, so the label
+// targets the number input by id, as SelectField does for its button.
+function PhoneField({
+  label,
+  control,
+  error,
+  hint,
+}: {
+  label: string;
+  control: Control<FormValues>;
+  error?: FieldError;
+  hint?: string;
+}) {
+  const id = useId();
+  const hintId = `${id}-hint`;
+  return (
+    <div className={fieldWrap}>
+      <label className={fieldLabel} htmlFor={id}>
+        {label} *
+      </label>
+      <Controller
+        name="phoneWhatsapp"
+        control={control}
+        render={({ field }) => (
+          <PhoneInput
+            id={id}
+            name={field.name}
+            value={field.value ?? ""}
+            onValueChange={field.onChange}
+            onBlur={field.onBlur}
+            invalid={Boolean(error)}
+            ariaDescribedby={hint ? hintId : undefined}
+          />
+        )}
+      />
+      {hint ? (
+        <span className={fieldHint} id={hintId}>
+          {hint}
+        </span>
+      ) : null}
       {error?.message ? <ErrorText>{error.message}</ErrorText> : null}
     </div>
   );
@@ -529,12 +576,11 @@ export function DesignerApplicationForm() {
                 type="email"
                 autoComplete="email"
               />
-              <TextField
+              <PhoneField
                 label="Phone number"
+                control={control}
                 error={errors.phoneWhatsapp}
-                registration={register("phoneWhatsapp")}
-                autoComplete="tel"
-                hint="Include your WhatsApp number if it's different."
+                hint="Use your WhatsApp number if you have one."
               />
               <TextField
                 label="Country/city based in"
@@ -862,7 +908,7 @@ export function DesignerApplicationForm() {
                 ["Full name", values.fullName],
                 ["Brand/business name", values.brandName],
                 ["Email address", values.email],
-                ["Phone / WhatsApp", values.phoneWhatsapp],
+                ["Phone / WhatsApp", formatPhone(values.phoneWhatsapp)],
                 ["Country/city", values.countryCity],
                 ["Social handles", values.socialHandles],
                 ["Website", values.websiteUrl || "Not provided"],

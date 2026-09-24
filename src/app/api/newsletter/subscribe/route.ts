@@ -1,5 +1,5 @@
 import { failure, readJson, success } from "@/lib/api";
-import { subscribeToCommunity } from "@/lib/klaviyo";
+import { saveSubscriber } from "@/lib/newsletter/repository";
 import { clientIp, enforceRateLimit, verifyTurnstile } from "@/lib/security";
 import { newsletterSchema, zodFieldErrors } from "@/lib/validation";
 
@@ -39,12 +39,15 @@ export async function POST(request: Request) {
         { retryable: true },
       );
     }
-    await subscribeToCommunity(
-      parsed.data.email.toLowerCase(),
-      parsed.data.source,
-      parsed.data.consentedAt,
-    );
-    return success({ status: "confirmation_pending" }, 202);
+    // Klaviyo (src/lib/klaviyo.ts) is set aside for now; signups are kept in
+    // Supabase until the email provider is chosen.
+    await saveSubscriber({
+      email: parsed.data.email,
+      source: parsed.data.source,
+      consentedAt: parsed.data.consentedAt,
+      consentCopyVersion: parsed.data.consentCopyVersion,
+    });
+    return success({ status: "subscribed" }, 201);
   } catch (error) {
     console.error("Newsletter signup failed", error);
     return failure(

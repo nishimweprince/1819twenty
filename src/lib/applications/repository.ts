@@ -1,5 +1,6 @@
 import "server-only";
 import { DesignerApplicationInput } from "@/lib/validation";
+import { normalizePhone } from "@/lib/phone";
 import { getSupabaseAdmin } from "@/lib/supabase-admin";
 import { generateReference } from "@/lib/security";
 
@@ -65,7 +66,7 @@ export async function createApplicationDraft(
     brand_name: input.brandName,
     contact_name: input.fullName,
     email: input.email.toLowerCase(),
-    phone_whatsapp: input.phoneWhatsapp,
+    phone_whatsapp: normalizePhone(input.phoneWhatsapp),
     country_city: input.countryCity,
     website_social: input.socialHandles,
     website_url: input.websiteUrl || null,

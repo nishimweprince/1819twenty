@@ -65,7 +65,7 @@ export function NewsletterForm({
       const result = await response.json();
       if (!response.ok || !result.ok)
         throw new Error(result.message ?? "Could not join the list.");
-      setMessage("Check your inbox to confirm your subscription.");
+      setMessage("You're on the list. Thank you for joining.");
       setStatus("success");
       reset();
     } catch (error) {
@@ -219,7 +219,8 @@ export function NewsletterForm({
         role="status"
         aria-live="polite"
       >
-        {message || "Double opt-in keeps the list useful and permission-based."}
+        {message ||
+          "Occasional updates on launches and events. Unsubscribe any time."}
       </p>
     </form>
   );
