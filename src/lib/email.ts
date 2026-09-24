@@ -1,6 +1,7 @@
 import "server-only";
 import { Resend } from "resend";
 import { env } from "./env";
+import { createUnsubscribeToken, fingerprint } from "./security";
 import {
   createPhotoReadUrl,
   DesignerApplicationRecord,
@@ -153,4 +154,48 @@ export async function sendApplicationEmails(
     receipt: receipt.error ? "failed" : "sent",
     internal: internal.error ? "failed" : "sent",
   };
+}
+
+/**
+ * Welcome email for a new newsletter subscriber. It carries both a visible
+ * unsubscribe link and the RFC 8058 one-click headers that mail clients use
+ * for their own unsubscribe button.
+ */
+export async function sendNewsletterWelcome(
+  email: string,
+  consentedAt: string,
+) {
+  if (!env.RESEND_API_KEY) {
+    console.warn("Newsletter welcome email skipped: Resend is not configured.");
+    return "not_configured" as const;
+  }
+
+  const token = encodeURIComponent(createUnsubscribeToken(email));
+  const unsubscribePage = `${env.NEXT_PUBLIC_SITE_URL}/newsletter/unsubscribe?token=${token}`;
+  const oneClick = `${env.NEXT_PUBLIC_SITE_URL}/api/newsletter/unsubscribe?token=${token}`;
+
+  const resend = new Resend(env.RESEND_API_KEY);
+  const result = await resend.emails.send(
+    {
+      from: env.RESEND_FROM_EMAIL,
+      to: email,
+      subject: "Welcome to Eighteen Nineteen Twenty",
+      headers: {
+        "List-Unsubscribe": `<${oneClick}>`,
+        "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+      },
+      html: `<div style="font-family:Arial,sans-serif;line-height:1.6;color:#1e3448;max-width:620px;margin:auto"><h1 style="font-family:Georgia,serif;font-weight:500">You're on the list.</h1><p>Thank you for joining the Eighteen Nineteen Twenty community.</p><p>We'll write when there's something worth sharing: the designers we're working with, collections as they launch, and events near you.</p><p>Eighteen Nineteen Twenty<br>Timeless roots. Modern living.</p><p style="margin-top:32px;font-size:12px;color:#5a6b7a">You're receiving this because you signed up at 1819twenty.com. <a href="${escapeHtml(unsubscribePage)}" style="color:#5a6b7a">Unsubscribe</a> at any time.</p></div>`,
+      text: `You're on the list.\n\nThank you for joining the Eighteen Nineteen Twenty community.\n\nWe'll write when there's something worth sharing: the designers we're working with, collections as they launch, and events near you.\n\nEighteen Nineteen Twenty\nTimeless roots. Modern living.\n\nUnsubscribe: ${unsubscribePage}`,
+    },
+    // Keyed to this consent, so a retried request doesn't send twice but a
+    // later resubscribe still gets its welcome.
+    {
+      idempotencyKey: `newsletter-welcome/${fingerprint(email)}/${consentedAt}`,
+    },
+  );
+  if (result.error) {
+    console.error("Newsletter welcome email failed", result.error.message);
+    return "failed" as const;
+  }
+  return "sent" as const;
 }

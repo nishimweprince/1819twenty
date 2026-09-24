@@ -128,3 +128,37 @@ export function verifyDraftToken(token: string, applicationId: string) {
     return false;
   }
 }
+
+// Unsubscribe links are signed under their own scope so a token minted for one
+// purpose (a draft) can never verify as another. They carry no expiry: a link
+// in a months-old email still has to work.
+const unsubscribeScope = "newsletter-unsubscribe:";
+
+function signUnsubscribe(encoded: string) {
+  return createHmac(
+    "sha256",
+    env.APP_SIGNING_SECRET ?? "local-development-only",
+  )
+    .update(unsubscribeScope + encoded)
+    .digest("base64url");
+}
+
+export function createUnsubscribeToken(email: string) {
+  const encoded = Buffer.from(email.trim().toLowerCase()).toString("base64url");
+  return `${encoded}.${signUnsubscribe(encoded)}`;
+}
+
+/** Returns the subscriber's email, or null when the token was tampered with. */
+export function verifyUnsubscribeToken(token: string) {
+  const [encoded, provided] = token.split(".");
+  if (!encoded || !provided) return null;
+  const expectedBuffer = Buffer.from(signUnsubscribe(encoded));
+  const providedBuffer = Buffer.from(provided);
+  if (
+    expectedBuffer.length !== providedBuffer.length ||
+    !timingSafeEqual(expectedBuffer, providedBuffer)
+  )
+    return null;
+  const email = Buffer.from(encoded, "base64url").toString("utf8");
+  return email.includes("@") ? email : null;
+}

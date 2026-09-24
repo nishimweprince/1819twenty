@@ -1,4 +1,5 @@
 import { failure, readJson, success } from "@/lib/api";
+import { sendNewsletterWelcome } from "@/lib/email";
 import { saveSubscriber } from "@/lib/newsletter/repository";
 import { clientIp, enforceRateLimit, verifyTurnstile } from "@/lib/security";
 import { newsletterSchema, zodFieldErrors } from "@/lib/validation";
@@ -41,12 +42,21 @@ export async function POST(request: Request) {
     }
     // Klaviyo (src/lib/klaviyo.ts) is set aside for now; signups are kept in
     // Supabase until the email provider is chosen.
-    await saveSubscriber({
+    const { email, joined } = await saveSubscriber({
       email: parsed.data.email,
       source: parsed.data.source,
       consentedAt: parsed.data.consentedAt,
       consentCopyVersion: parsed.data.consentCopyVersion,
     });
+    // The signup is already stored, so a failed welcome email is logged
+    // rather than reported to the subscriber as a failed signup.
+    if (joined) {
+      try {
+        await sendNewsletterWelcome(email, parsed.data.consentedAt);
+      } catch (error) {
+        console.error("Newsletter welcome email failed", error);
+      }
+    }
     return success({ status: "subscribed" }, 201);
   } catch (error) {
     console.error("Newsletter signup failed", error);

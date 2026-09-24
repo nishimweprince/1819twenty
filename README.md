@@ -28,7 +28,7 @@ Apply `supabase/migrations/001_phase_one.sql`, then `supabase/migrations/002_app
 
 ## Provider setup
 
-- Newsletter signups are stored in Supabase (`newsletter_subscribers`). The Klaviyo integration in `src/lib/klaviyo.ts` is set aside; to re-enable it, configure a double-opt-in list and call it from `/api/newsletter/subscribe`.
+- Newsletter signups are stored in Supabase (`newsletter_subscribers`), and each new subscriber gets a welcome email through Resend with a signed unsubscribe link (`/newsletter/unsubscribe`) and one-click `List-Unsubscribe` headers. `APP_SIGNING_SECRET` must stay stable in production, or earlier unsubscribe links stop working. The Klaviyo integration in `src/lib/klaviyo.ts` is set aside; to re-enable it, configure a double-opt-in list and call it from `/api/newsletter/subscribe`.
 - Verify `1819twenty.com` in Resend and register `/api/webhooks/resend`.
 - Create Cloudflare Turnstile keys for production.
 - Add Shopify Storefront credentials when the store is available; Phase 1 does not call Shopify at render time.

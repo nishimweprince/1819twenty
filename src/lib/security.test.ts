@@ -1,8 +1,10 @@
 import { describe, expect, it, vi } from "vitest";
 import {
   createDraftToken,
+  createUnsubscribeToken,
   generateReference,
   verifyDraftToken,
+  verifyUnsubscribeToken,
 } from "./security";
 
 describe("application references", () => {
@@ -34,5 +36,23 @@ describe("turnstile verification", () => {
     await expect(verifyTurnstile("", "127.0.0.1")).resolves.toBe(true);
     vi.unstubAllEnvs();
     vi.resetModules();
+  });
+});
+
+describe("unsubscribe tokens", () => {
+  it("round-trips the lowercased email", () => {
+    const token = createUnsubscribeToken(" Aline@Example.com ");
+    expect(verifyUnsubscribeToken(token)).toBe("aline@example.com");
+  });
+  it("rejects tampered, truncated, and draft tokens", () => {
+    const token = createUnsubscribeToken("aline@example.com");
+    const [, signature] = token.split(".");
+    const forged = `${Buffer.from("someone@example.com").toString("base64url")}.${signature}`;
+    expect(verifyUnsubscribeToken(forged)).toBeNull();
+    expect(verifyUnsubscribeToken(token.slice(0, -4))).toBeNull();
+    expect(verifyUnsubscribeToken("")).toBeNull();
+    expect(
+      verifyUnsubscribeToken(createDraftToken("id", "aline@example.com")),
+    ).toBeNull();
   });
 });
