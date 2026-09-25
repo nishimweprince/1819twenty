@@ -295,15 +295,6 @@ export default function DesignersPage() {
             Apply to join
           </Link>
         </div>
-        <p
-          className={`${ceremonial} absolute right-[5vw] top-1/2 z-2 mb-0 grid -translate-y-1/2 gap-2.5 text-left leading-[1.9] text-paper max-[900px]:hidden`}
-          aria-hidden="true"
-        >
-          <span>People</span>
-          <span>Places</span>
-          <span>Pieces</span>
-          <span>Purpose</span>
-        </p>
       </section>
     </>
   );

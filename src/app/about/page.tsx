@@ -193,7 +193,7 @@ export default function AboutPage() {
       </section>
 
       <section className="py-section" aria-labelledby="our-journey">
-        <div className="container grid grid-cols-[1.5fr_0.85fr_0.95fr_auto] items-center gap-[clamp(1.25rem,3vw,2.5rem)] max-[1100px]:grid-cols-[1fr_1fr] max-[1100px]:items-start max-[1100px]:gap-y-5 max-[900px]:grid-cols-1">
+        <div className="container grid grid-cols-[1.5fr_0.85fr_0.95fr] items-center gap-[clamp(1.25rem,3vw,2.5rem)] max-[1100px]:grid-cols-[1fr_1fr] max-[1100px]:items-start max-[1100px]:gap-y-5 max-[900px]:grid-cols-1">
           <div className="max-[1100px]:col-span-2 max-[900px]:col-span-1">
             <h2 id="our-journey" className="mb-3">
               Our Journey From Us to the Continent
@@ -241,18 +241,10 @@ export default function AboutPage() {
                 sizes="(max-width: 900px) 100vw, 30vw"
               />
             </div>
-            <figcaption className={`${caption} min-[1101px]:hidden`}>
+            <figcaption className={caption}>
               Different Places. Shared Purpose.
             </figcaption>
           </figure>
-          {/* Hidden when the grid collapses; the figcaption above carries the
-              phrase then. */}
-          <p
-            className={`${scriptAccent} m-0 max-w-[9ch] text-ink max-[1100px]:hidden`}
-            aria-hidden="true"
-          >
-            Different Places. Shared Purpose.
-          </p>
         </div>
       </section>
 
@@ -317,19 +309,13 @@ export default function AboutPage() {
             Fashion and Home Rooted in Heritage — Our Story, Designed for Your
             Style.
           </h2>
-          <Link className={`${buttonGold} ${withArrow}`} href="/designers">
-            Join as a designer
+          <Link
+            className={`${buttonGold} ${withArrow}`}
+            href="/designers/apply"
+          >
+            Join as a Designer
           </Link>
         </div>
-        <p
-          className={`${scriptAccent} absolute right-[5vw] top-1/2 z-2 mb-0 grid -translate-y-1/2 justify-items-center text-center text-paper max-[900px]:hidden`}
-          aria-hidden="true"
-        >
-          <span>People.</span>
-          <span>Places.</span>
-          <span>Pieces.</span>
-          <span>Purpose.</span>
-        </p>
       </section>
     </>
   );

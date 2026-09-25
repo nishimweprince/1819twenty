@@ -31,6 +31,7 @@ const tiles: readonly {
   src: string;
   alt: string;
   href: Route;
+  comingSoon: boolean;
 }[] = [
   {
     name: "Fashion",
@@ -38,6 +39,7 @@ const tiles: readonly {
     src: "/photos/fashion-portrait.jpg",
     alt: "Woman in a wide straw hat and a geometric print dress",
     href: "/#join",
+    comingSoon: true,
   },
   {
     name: "Home",
@@ -45,6 +47,7 @@ const tiles: readonly {
     src: "/photos/interior-decor.jpg",
     alt: "Patterned pillow, carved wooden bowls and stacked books on a wood table",
     href: "/#join",
+    comingSoon: true,
   },
   {
     name: "Designers",
@@ -52,6 +55,7 @@ const tiles: readonly {
     src: "/photos/loom.jpg",
     alt: "A weaver's hands working a patterned textile on a frame loom",
     href: "/designers",
+    comingSoon: false,
   },
   {
     name: "Journal",
@@ -59,6 +63,7 @@ const tiles: readonly {
     src: "/photos/savanna.jpg",
     alt: "Savanna landscape at sunset",
     href: "/#join",
+    comingSoon: true,
   },
 ];
 
@@ -95,6 +100,19 @@ export default function HomePage() {
           <h1 id="site-title" className="mb-3 text-display">
             Eighteen Nineteen Twenty
           </h1>
+          {/* The one thing a first-time visitor must not miss, so it is set
+              one step below the name rather than as a small label. */}
+          <p className="mb-5 flex items-center gap-4 font-display text-[clamp(1.6rem,1.2rem+1.6vw,2.4rem)] leading-tight text-terracotta">
+            <span
+              className={`${goldRule} max-[520px]:w-6`}
+              aria-hidden="true"
+            />
+            Launching Soon
+            <span
+              className={`${goldRule} max-[520px]:w-6`}
+              aria-hidden="true"
+            />
+          </p>
           <p className="mb-4 max-w-[34ch] font-display text-[clamp(1.15rem,0.95rem+0.75vw,1.45rem)] leading-[1.35]">
             Truly original fashion and home, curated from Africa&rsquo;s most
             compelling designers.
@@ -179,8 +197,15 @@ export default function HomePage() {
                 </PhotoNote>
               ) : null}
               <div className="absolute inset-x-0 bottom-0 z-1 p-5 text-paper max-[520px]:p-4">
-                <span className={`${ceremonialLg} block font-display`}>
-                  {tile.name}
+                <span className="flex flex-wrap items-center gap-3">
+                  <span className={`${ceremonialLg} font-display`}>
+                    {tile.name}
+                  </span>
+                  {tile.comingSoon ? (
+                    <span className="rounded-full bg-gold px-2.5 py-0.5 text-[0.78rem] font-semibold text-ink">
+                      Coming Soon
+                    </span>
+                  ) : null}
                 </span>
                 <span className={`${ceremonial} mt-1.5 block text-paper`}>
                   {tile.line}

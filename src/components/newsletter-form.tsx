@@ -21,6 +21,16 @@ const schema = z.object({
 });
 type NewsletterValues = z.infer<typeof schema>;
 
+/* Spam trap. Inline rather than a utility class so the field can never show
+   to a person, even if a stylesheet fails to load. Bots still see it. */
+const honeypot: React.CSSProperties = {
+  position: "absolute",
+  left: "-10000px",
+  width: 1,
+  height: 1,
+  overflow: "hidden",
+};
+
 export function NewsletterForm({
   variant = "hero",
 }: {
@@ -131,10 +141,7 @@ export function NewsletterForm({
             .
           </span>
         </label>
-        <div
-          className="absolute left-[-10000px] h-px w-px overflow-hidden"
-          aria-hidden="true"
-        >
+        <div style={honeypot} aria-hidden="true">
           <label>
             Website
             <input tabIndex={-1} autoComplete="off" {...register("website")} />
@@ -204,10 +211,7 @@ export function NewsletterForm({
           {errors.consent.message}
         </p>
       ) : null}
-      <div
-        className="absolute left-[-10000px] h-px w-px overflow-hidden"
-        aria-hidden="true"
-      >
+      <div style={honeypot} aria-hidden="true">
         <label>
           Website
           <input tabIndex={-1} autoComplete="off" {...register("website")} />
